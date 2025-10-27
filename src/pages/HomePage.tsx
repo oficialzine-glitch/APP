@@ -5,8 +5,10 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import appFotoImage from '../assets/app foto1 copy copy copy copy copy copy.webp';
-import mapImage from '../assets/map.webp';
+
+// Use Pexels stock photos for visual content
+const appFotoImage = 'https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg?auto=compress&cs=tinysrgb&w=800';
+const mapImage = 'https://images.pexels.com/photos/1078850/pexels-photo-1078850.jpeg?auto=compress&cs=tinysrgb&w=800';
 
 interface HomePageProps {
   onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth') => void;
