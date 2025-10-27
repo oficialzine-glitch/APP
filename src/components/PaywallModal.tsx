@@ -1,12 +1,156 @@
-import React from 'react';
-import { X, Crown, Check, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Crown, Check } from 'lucide-react';
 
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+type PlanKey = 'yearly' | 'monthly' | 'weekly';
+
+function PickPlanModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [selectedPlan, setSelectedPlan] = useState<PlanKey>('yearly');
+
+  if (!open) return null;
+
+  const planClasses = (active: boolean) =>
+    [
+      'w-full text-left rounded-xl border p-4 transition',
+      active
+        ? 'border-cyan-400/60 bg-cyan-400/10'
+        : 'border-slate-700/60 hover:border-slate-500/70 bg-slate-800/50',
+    ].join(' ');
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center"
+      aria-modal="true"
+      role="dialog"
+    >
+      {/* Backdrop (click to close) */}
+      <button
+        aria-label="Close"
+        className="absolute inset-0 bg-black/60"
+        onClick={onClose}
+      />
+
+      {/* Modal panel */}
+      <div className="relative w-full max-w-md mx-4 rounded-2xl border border-slate-700/60 bg-slate-900 shadow-xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <Crown className="w-5 h-5 text-cyan-400" />
+            <h3 className="text-white font-semibold">Choose Your Plan</h3>
+          </div>
+          <button
+            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            onClick={onClose}
+            aria-label="Close plan modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-5 py-4 space-y-3">
+          {/* Yearly */}
+          <button
+            type="button"
+            className={planClasses(selectedPlan === 'yearly')}
+            onClick={() => setSelectedPlan('yearly')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">Yearly</div>
+                <div className="text-sm text-slate-400">
+                  Best value • ~$0.40/week
+                </div>
+              </div>
+              {selectedPlan === 'yearly' ? (
+                <Check className="w-5 h-5 text-cyan-400" />
+              ) : (
+                <div className="w-5 h-5 rounded-full border border-slate-600" />
+              )}
+            </div>
+          </button>
+
+          {/* Monthly */}
+          <button
+            type="button"
+            className={planClasses(selectedPlan === 'monthly')}
+            onClick={() => setSelectedPlan('monthly')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">Monthly</div>
+                <div className="text-sm text-slate-400">Standard</div>
+              </div>
+              {selectedPlan === 'monthly' ? (
+                <Check className="w-5 h-5 text-cyan-400" />
+              ) : (
+                <div className="w-5 h-5 rounded-full border border-slate-600" />
+              )}
+            </div>
+          </button>
+
+          {/* Weekly */}
+          <button
+            type="button"
+            className={planClasses(selectedPlan === 'weekly')}
+            onClick={() => setSelectedPlan('weekly')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-white font-medium">Weekly</div>
+                <div className="text-sm text-slate-400">Try it out</div>
+              </div>
+              {selectedPlan === 'weekly' ? (
+                <Check className="w-5 h-5 text-cyan-400" />
+              ) : (
+                <div className="w-5 h-5 rounded-full border border-slate-600" />
+              )}
+            </div>
+          </button>
+        </div>
+
+        {/* Footer (UI-only placeholders) */}
+        <div className="px-5 pb-5 pt-2 space-y-3">
+          <button
+            type="button"
+            className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white font-semibold py-3 rounded-xl hover:opacity-95 transition"
+            // Placeholder only — no purchase logic wired
+            onClick={() => {
+              /* no-op */
+            }}
+          >
+            Upgrade Now
+          </button>
+
+          <div className="text-center text-xs text-slate-400">
+            Auto-renews. Cancel anytime.{' '}
+            <span className="underline underline-offset-2 cursor-default opacity-80">
+              Terms of Use
+            </span>{' '}
+            •{' '}
+            <span className="underline underline-offset-2 cursor-default opacity-80">
+              Privacy Policy
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
+  const [showPlanModal, setShowPlanModal] = useState(false);
+
   if (!isOpen) return null;
 
   const features = [
@@ -300,20 +444,26 @@ export default function PaywallModal({ isOpen, onClose }: PaywallModalProps) {
           </div>
         </div>
 
-        {/* Unlock Button - Slightly smaller */}
-        <button className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white font-bold py-3.5 rounded-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center relative overflow-hidden group mb-3">
+        {/* Unlock Button */}
+        <button
+          className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white font-bold py-3.5 rounded-full shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center relative overflow-hidden group mb-3"
+          onClick={() => setShowPlanModal(true)}
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
           <span className="text-base font-medium mr-2">Upgrade to premium</span>
           <span className="text-lg"></span>
         </button>
 
-        {/* Footer Links - Smaller */}
+        {/* Footer Links - placeholders */}
         <div className="flex justify-center space-x-6 text-slate-400 text-xs">
-          <button className="hover:text-white transition-colors">Terms of Use</button>
-          <button className="hover:text-white transition-colors">Restore Purchase</button>
-          <button className="hover:text-white transition-colors">Privacy Policy</button>
+          <span className="hover:text-white transition-colors cursor-default">Terms of Use</span>
+          <span className="hover:text-white transition-colors cursor-default">Restore Purchase</span>
+          <span className="hover:text-white transition-colors cursor-default">Privacy Policy</span>
         </div>
       </div>
+
+      {/* Pick Plan Modal (placeholder-only) */}
+      <PickPlanModal open={showPlanModal} onClose={() => setShowPlanModal(false)} />
     </div>
   );
 }
