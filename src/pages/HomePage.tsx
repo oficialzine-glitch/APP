@@ -5,8 +5,8 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import appFotoImage from '../assets/20250809_1338_Neon Face Scan_simple_compose_01k27yhww9e38vttd0y2350gxy copy copy copy.png';
-import mapImage from '../assets/map copy copy copy copy copy.webp';
+import appFotoImage from '../assets/20250809_1338_Neon Face Scan_simple_compose_01k27yhww9e38vttd0y2350gxy copy copy copy copy.png';
+import mapImage from '../assets/map copy copy copy copy copy copy.webp';
 
 interface HomePageProps {
   onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth') => void;
