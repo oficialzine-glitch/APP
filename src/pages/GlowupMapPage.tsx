@@ -352,7 +352,7 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
               Glowup Map
             </h1>
-            <p className="text-slate-300">Your personalized transformation plan</p>
+            <p className="text-slate-300">Pick an analysis to generate your Glowup Map</p>
           </div>
         </div>
 
@@ -455,10 +455,7 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
         {!selectedAnalysis ? (
           /* Step 1: Analysis Selection */
           <div className="animate-fade-in">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-white mb-2">Pick an analysis to generate your Glowup Map</h2>
-              <p className="text-slate-400">Choose from your recent facial analyses</p>
-            </div>
+            {/* (Removed the title + subtitle block here) */}
 
             {analyses.length === 0 ? (
               /* Empty State */
