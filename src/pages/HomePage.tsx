@@ -5,7 +5,7 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import appFotoImage from '../assets/20250809_1338_Neon Face Scan_simple_compose_01k27yhww9e38vttd0y2350gxy copy copy copy copy.png';
+import appFotoImage from '../assets/homepageimg.png';
 import mapImage from '../assets/map copy copy copy copy copy copy.webp';
 
 interface HomePageProps {
@@ -89,8 +89,8 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/40 to-cyan-500/30 rounded-2xl blur-sm scale-[1.02]"></div>
           
           {/* Main image */}
-          <img 
-           import appFotoImage from '../assets/homepageimg.png';
+          <img
+            src={appFotoImage}
             alt="AI Face Analysis"
             className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20"
           />
