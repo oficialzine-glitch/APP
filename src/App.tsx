@@ -20,6 +20,7 @@ type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'resul
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('intro');
+  const [pageTransition, setPageTransition] = useState(false);
   const [analysisData, setAnalysisData] = useState<FacialAnalysis | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showCreatorCodeModal, setShowCreatorCodeModal] = useState(false);
@@ -54,7 +55,19 @@ function App() {
     if (data) {
       setAnalysisData(data);
     }
-    setCurrentPage(page);
+    setPageTransition(true);
+    setTimeout(() => {
+      setCurrentPage(page);
+      setPageTransition(false);
+    }, 150);
+  };
+
+  const handlePageChange = (page: PageType) => {
+    setPageTransition(true);
+    setTimeout(() => {
+      setCurrentPage(page);
+      setPageTransition(false);
+    }, 150);
   };
 
   const handleLogoTap = () => {
@@ -104,6 +117,8 @@ function App() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-black via-slate-950 to-black">
+      {/* Page Content with Transition */}
+      <div className={`transition-opacity duration-150 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
       {/* Top Navigation Bar */}
       {!['glowup-map', 'upload'].includes(currentPage) && (
         <div className="flex justify-between items-center mb-4 pt-4 px-4">
@@ -134,8 +149,9 @@ function App() {
         </div>
       )}
 
-      {renderPage()}
-      
+        {renderPage()}
+      </div>
+
       {/* Static Bottom Navigation - Only show on main pages, not on special pages */}
       {!['upload', 'previous-analyses'].includes(currentPage) && (
         <div className="fixed bottom-0 left-0 right-0 p-3 bg-black/20 backdrop-blur-sm">
@@ -143,10 +159,10 @@ function App() {
             <div className="flex justify-center">
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-1 border border-slate-700/50">
                 <button
-                  onClick={() => setCurrentPage('analysis')}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  onClick={() => handlePageChange('analysis')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                     currentPage === 'analysis' || currentPage === 'home'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -154,10 +170,10 @@ function App() {
                   Analysis
                 </button>
                 <button
-                  onClick={() => setCurrentPage('glowup-map')}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  onClick={() => handlePageChange('glowup-map')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                     currentPage === 'glowup-map'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -165,10 +181,10 @@ function App() {
                   Glowup
                 </button>
                 <button
-                  onClick={() => setCurrentPage('results')}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  onClick={() => handlePageChange('results')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                     currentPage === 'results'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -176,10 +192,10 @@ function App() {
                   Results
                 </button>
                 <button
-                  onClick={() => setCurrentPage('profile')}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  onClick={() => handlePageChange('profile')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                     currentPage === 'profile'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
