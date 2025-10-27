@@ -90,7 +90,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           
           {/* Main image */}
           <img 
-            src={appFotoImage}
+           import phoneMockupImage from '../assets/homepageimg.png';
             alt="AI Face Analysis"
             className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20"
           />
