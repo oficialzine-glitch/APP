@@ -51,6 +51,13 @@ function App() {
     return <AuthPage onBack={() => setCurrentPage('intro')} />;
   }
 
+  // Redirect authenticated users from intro/onboarding/auth pages to analysis
+  React.useEffect(() => {
+    if (user && ['intro', 'onboarding', 'auth'].includes(currentPage)) {
+      setCurrentPage('analysis');
+    }
+  }, [user, currentPage]);
+
   const handleNavigateWithData = (page: PageType, data?: FacialAnalysis) => {
     if (data) {
       setAnalysisData(data);
@@ -97,6 +104,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'analysis':
+      case 'home':
         return <HomePage onNavigate={setCurrentPage} />;
       case 'upload':
         return <AnalysisPage onBack={() => setCurrentPage('analysis')} onNavigate={setCurrentPage} />;
