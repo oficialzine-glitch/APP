@@ -1,7 +1,5 @@
 import React from 'react';
-
-// Use Pexels stock photo for phone mockup
-const phoneMockupImage = 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg?auto=compress&cs=tinysrgb&w=400';
+import phoneMockupImage from '../assets/phone-mockup copy.png';
 
 interface IntroductionPageProps {
   onGetStarted: () => void;
