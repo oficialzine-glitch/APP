@@ -9,6 +9,9 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showThanks, setShowThanks] = useState(false);
   const [selectedValues, setSelectedValues] = useState<Record<number, string | string[]>>({});
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [touchedButton, setTouchedButton] = useState<string | null>(null);
 
   const questions = [
     {
@@ -72,7 +75,8 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const progress = ((currentStep + 1) / questions.length) * 100;
 
   const handleOptionClick = (optionId: string) => {
-    console.log('Button clicked:', optionId); // Debug log
+    setTouchedButton(optionId);
+    setTimeout(() => setTouchedButton(null), 150);
     
     if (currentQuestion.multiSelect) {
       const currentSelections = (selectedValues[currentStep] as string[]) || [];
@@ -126,9 +130,25 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
       setCurrentStep(prev => prev + 1);
     } else {
       setShowThanks(true);
-      setTimeout(() => {
-        onComplete();
-      }, 2000);
+
+      // Start loading animation
+      let progress = 0;
+      const duration = 6000; // 6 seconds
+      const increment = 100 / (duration / 50); // Update every 50ms
+
+      const timer = setInterval(() => {
+        progress += increment;
+        if (progress >= 100) {
+          progress = 100;
+          setLoadingProgress(100);
+          clearInterval(timer);
+          setTimeout(() => {
+            setLoadingComplete(true);
+          }, 200);
+        } else {
+          setLoadingProgress(progress);
+        }
+      }, 50);
     }
   };
 
@@ -138,58 +158,73 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
     }
   };
 
-  // Thanks screen
+  // Thanks screen - Simplified & Static (No Scroll)
   if (showThanks) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black relative overflow-hidden flex items-center justify-center p-4">
-        {/* Enhanced blue gradient overlays */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-600/30 via-cyan-500/20 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-bl from-cyan-400/25 via-blue-500/15 to-transparent rounded-full blur-2xl"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-blue-500/20 via-cyan-400/10 to-transparent rounded-full blur-3xl"></div>
-        
-        <div className="text-center animate-fade-in max-w-md mx-auto">
-          {/* Enhanced icon with blue theme */}
-          <div className="w-32 h-32 bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 animate-scale-in shadow-2xl shadow-blue-500/50 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse opacity-75"></div>
-            <Sparkles className="w-16 h-16 text-white animate-pulse relative z-10" />
-          </div>
-          
-          {/* Enhanced title */}
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-500 bg-clip-text text-transparent mb-6 animate-slide-up leading-tight">
-            Perfect! You're All Set
-          </h1>
-          
-          {/* Enhanced description */}
-          <div className="space-y-4 mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-white text-xl font-semibold leading-relaxed">
-              Your personalized experience is now ready!
-            </p>
-            <p className="text-slate-300 text-base leading-relaxed">
-              Based on your preferences, NextFace AI will provide tailored analysis results, customized recommendations, and personalized improvement suggestions designed specifically for your goals.
-            </p>
-            <p className="text-blue-300 text-sm font-medium">
-              Everything you see will be optimized for your unique profile and preferences.
-            </p>
-          </div>
-          
-          {/* Continue button */}
-          <button
-            onClick={onComplete}
-            className="w-full py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] animate-slide-up relative overflow-hidden group"
-            style={{ animationDelay: '0.4s' }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-            <span className="relative">Continue to NextFace AI</span>
-          </button>
-          
-          {/* Status indicator */}
-          <div className="mt-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <span className="text-blue-400 text-sm font-medium">Ready to analyze your photos</span>
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+      <div className="h-screen bg-gradient-to-br from-black via-slate-950 to-black relative overflow-hidden flex items-center justify-center p-6">
+        {/* Animated gradient orbs */}
+        <div className="pointer-events-none absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-cyan-500/20 via-blue-600/15 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="pointer-events-none absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/15 via-cyan-400/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+        <div className="text-center max-w-md mx-auto relative z-10">
+          {/* Success animation circle */}
+          <div className="relative w-36 h-36 mx-auto mb-8 animate-scale-in">
+            {/* Rotating rings */}
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-400 border-r-blue-500 animate-spin" style={{ animationDuration: '3s' }}></div>
+            <div className="absolute inset-2 rounded-full border-4 border-transparent border-b-blue-400 border-l-cyan-500 animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }}></div>
+
+            {/* Center icon or progress */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {loadingComplete ? (
+                <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/50">
+                  <svg className="w-10 h-10 text-white animate-scale-in" style={{ animationDelay: '0.3s' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              ) : (
+                <div className="w-20 h-20 bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-blue-600/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/30 border-2 border-cyan-500/30">
+                  <span className="text-2xl font-bold text-white">
+                    {Math.round(loadingProgress)}%
+                  </span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Main message */}
+          {loadingComplete && (
+            <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <h1 className="text-5xl font-bold mb-3 leading-tight">
+                <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+                  Thanks!
+                </span>
+              </h1>
+              <h2 className="text-3xl font-bold mb-5">
+                <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
+                  You're All Set
+                </span>
+              </h2>
+              <p className="text-slate-300 text-base leading-relaxed">
+                Your personalized AI experience is ready.
+              </p>
+            </div>
+          )}
+
+          {/* CTA button */}
+          {loadingComplete && (
+            <button
+              onClick={onComplete}
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white font-bold text-lg rounded-2xl shadow-2xl shadow-blue-500/50 hover:shadow-blue-500/70 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] animate-fade-in relative overflow-hidden group"
+              style={{ animationDelay: '0.6s' }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+              <span className="relative flex items-center justify-center space-x-2">
+                <span>Start Your First Analysis</span>
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </button>
+          )}
+
         </div>
       </div>
     );
@@ -198,8 +233,8 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black relative overflow-hidden flex flex-col">
       {/* Blue gradient overlay */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-600/20 via-cyan-500/10 to-transparent rounded-full blur-3xl"></div>
-      <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-bl from-cyan-400/15 via-blue-500/8 to-transparent rounded-full blur-2xl"></div>
+      <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-blue-600/20 via-cyan-500/10 to-transparent rounded-full blur-3xl"></div>
+      <div className="pointer-events-none absolute top-10 right-10 w-64 h-64 bg-gradient-to-bl from-cyan-400/15 via-blue-500/8 to-transparent rounded-full blur-2xl"></div>
       
       {/* Progress Bar */}
       <div className="w-full p-4 pt-8">
@@ -214,7 +249,7 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center px-4 pb-20">
+      <div className="flex-1 flex flex-col justify-center px-4 pb-20 relative z-10">
         <div className="max-w-sm mx-auto w-full">
           {/* Question Header */}
           <div className="text-center mb-8 animate-fade-in">
@@ -227,7 +262,7 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
           </div>
 
           {/* Options - Completely New */}
-          <div className="space-y-3 mb-8 animate-slide-up">
+          <div className="space-y-3 mb-8">
             {currentQuestion.options.map((option, index) => {
               const selected = isSelected(option.id);
               
@@ -235,13 +270,18 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
                 <button
                   key={option.id}
                   type="button"
-                  onClick={() => handleOptionClick(option.id)}
-                  className={`w-full p-4 rounded-xl transition-all duration-200 text-center font-medium text-base border-2 animate-fade-in ${
+                  onTouchStart={() => handleOptionClick(option.id)}
+                  className={`w-full p-4 rounded-xl text-center font-medium text-base border-2 pointer-events-auto transition-all duration-150 active:scale-95 ${
                     selected
-                      ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-white border-cyan-400 shadow-lg shadow-cyan-500/20 transform scale-[1.02]'
-                      : 'bg-slate-800/40 text-slate-300 border-slate-700/50 hover:bg-slate-700/50 hover:border-slate-600/50 hover:scale-[1.01]'
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-white border-cyan-400 shadow-lg shadow-cyan-500/20'
+                      : touchedButton === option.id
+                      ? 'bg-slate-700/50 text-white border-slate-600/50 scale-95'
+                      : 'bg-slate-800/40 text-slate-300 border-slate-700/50'
                   }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation'
+                  }}
                 >
                   {option.text}
                 </button>
@@ -254,8 +294,12 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
             {currentStep > 0 ? (
               <button
                 type="button"
-                onClick={handleBack}
-                className="w-12 h-12 bg-slate-800/60 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-200"
+                onTouchStart={handleBack}
+                className="w-12 h-12 bg-slate-800/60 rounded-full flex items-center justify-center text-slate-300 active:text-white active:bg-slate-700/60 transition-all duration-150 active:scale-95"
+                style={{ 
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation'
+                }}
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -265,13 +309,17 @@ export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
 
             <button
               type="button"
-              onClick={handleNext}
+              onTouchStart={handleNext}
               disabled={!canProceed()}
-              className={`px-8 py-3 rounded-full font-bold text-base transition-all duration-300 transform ${
+              className={`px-8 py-3 rounded-full font-bold text-base transition-all duration-150 active:scale-95 ${
                 canProceed()
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 active:scale-95'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
                   : 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
               }`}
+              style={{ 
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation'
+              }}
             >
               {currentStep === questions.length - 1 ? 'Complete' : 'Continue'}
             </button>
