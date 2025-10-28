@@ -84,7 +84,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           {/* Main image (fixed) */}
           <img
             src={homepageImg}
-            alt="AI Face Analysis"
+            alt="AI Face Analyss"
             className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
             loading="eager"
             decoding="async"
