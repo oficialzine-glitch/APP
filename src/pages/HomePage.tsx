@@ -162,15 +162,6 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   >
     <span className="relative z-10">Get Your Glowup Map</span>
 
-    {/* Soft halo that bleeds past the border (prevents hard edge) */}
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute -inset-px -z-10 rounded-2xl
-                 bg-gradient-to-r from-cyan-400/35 via-blue-500/25 to-blue-600/25
-                 blur-xl"
-    />
-  </button>
-</div>
 
 
       {/* Why Choose Section */}
