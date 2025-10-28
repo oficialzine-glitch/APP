@@ -447,3 +447,4 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </div>
     </div>
   );
+}
