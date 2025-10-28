@@ -6,7 +6,7 @@ import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 // REMOVE the old image import if unused
-// import appFotoImage from '../assets/homepageimg.png';
+// import appFotoImage from '../assets/homepageimgcopy.png';
 import homepageImg from '../assets/homepageimgcopy.png';
 import mapImage from '../assets/map copy copy copy copy copy copy.webp';
 
