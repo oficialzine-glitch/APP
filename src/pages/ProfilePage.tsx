@@ -9,6 +9,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { saveAnalysis, checkStorageLimit } from '../lib/history';
 
+// ⬅️ Moved ABOVE the interface (fix)
 type PageType =
   | 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results'
   | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'hairstyles';
@@ -25,88 +26,62 @@ export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }:
   const [showStorageWarning, setShowStorageWarning] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // 🔒 Safe destructure with fallbacks so older AuthContext shapes don't crash
-  const {
-    isPremium = false,
-    user = null,
-    canStartAnalysis: _canStartAnalysis,
-    incrementAnalysisCount: _incrementAnalysisCount,
-  } = useAuth() as any;
-
-  const canStartAnalysis: () => boolean = typeof _canStartAnalysis === 'function' ? _canStartAnalysis : () => true;
-  const incrementAnalysisCount: () => void = typeof _incrementAnalysisCount === 'function' ? _incrementAnalysisCount : () => {};
-
+  const { isPremium, user, canStartAnalysis, incrementAnalysisCount } = useAuth();
   const { isAnalyzing, analysis, analyzeImage } = useImageProcessing();
   const { t } = useLanguage();
 
-  useEffect(() => {
-    console.log('MOUNT:', 'src/pages/AnalysisPage.tsx');
-    // Revoke blob URL if component unmounts
-    return () => {
-      if (selectedImage) URL.revokeObjectURL(selectedImage);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Revoke previous blob URL when a new one is set
-  useEffect(() => {
-    return () => {
-      if (selectedImage) URL.revokeObjectURL(selectedImage);
-    };
-  }, [selectedImage]);
+  useEffect(() => { console.log("MOUNT:", "src/pages/AnalysisPage.tsx"); }, []);
 
   const handleImageSelect = async (file: File) => {
+    // Create temporary blob URL for preview only - NOT persisted
     const tempUrl = URL.createObjectURL(file);
-    // revoke any old preview before setting a new one to avoid leaks
-    if (selectedImage) URL.revokeObjectURL(selectedImage);
     setSelectedImage(tempUrl);
-
+    
     try {
-      // Optional storage check for premium users *before* analysis
-      try {
-        if (user && isPremium) {
-          const res = await checkStorageLimit({ userId: user.id });
-          if (res?.atLimit) setShowStorageWarning(true);
+      // Check storage limit for premium users before analysis
+      if (user && isPremium) {
+        const { atLimit } = await checkStorageLimit({ userId: user.id });
+        if (atLimit) {
+          setShowStorageWarning(true);
         }
-      } catch (e) {
-        console.warn('checkStorageLimit (pre-analysis) failed softly:', e);
       }
 
       const result = await analyzeImage(file, isPremium);
-
-      // Free users: increment count if analysis succeeded
+      
+      // Increment analysis count for free users
       if (result && !isPremium) {
-        try {
-          incrementAnalysisCount();
-        } catch (e) {
-          console.warn('incrementAnalysisCount unavailable:', e);
-        }
+        incrementAnalysisCount();
       }
-
-      // Notify parent that first analysis completed
-      if (result && onAnalysisComplete) onAnalysisComplete();
-
+      
+      // Mark first analysis as complete
+      if (result && onAnalysisComplete) {
+        onAnalysisComplete();
+      }
+      
       // Save analysis to history after successful completion
       if (result && user) {
         try {
-          // Check storage limit again before saving
-          const res = await checkStorageLimit({ userId: user.id });
-          if (!res?.atLimit) {
+          // Check storage limit before saving
+          const { atLimit } = await checkStorageLimit({ userId: user.id });
+          
+          if (!atLimit) {
             const saveResult = await saveAnalysis({
               userId: user.id,
-              imageUrl: tempUrl, // edge/backend should replace with stored path
-              analysis: result,
+              imageUrl: tempUrl, // temporary blob URL - edge function will replace with storage path
+              analysis: result
             });
-            if (!saveResult?.ok) {
-              console.error('Failed to save analysis:', saveResult?.error);
+            if (saveResult.ok) {
+              console.log('Analysis saved to history successfully');
+            } else {
+              console.error('Failed to save analysis:', saveResult.error);
             }
           } else {
+            // Show warning if at limit (analysis still shown, just not saved)
             setShowStorageWarning(true);
           }
         } catch (error) {
           console.error('Failed to save analysis to history:', error);
-          // Non-blocking
+          // Don't block UI - just log the error
         }
       }
     } catch (error) {
@@ -114,31 +89,47 @@ export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }:
     }
   };
 
+  const handlePremiumFeatureClick = () => setShowPremiumModal(true);
+
   const handleClearImage = () => {
     if (selectedImage) URL.revokeObjectURL(selectedImage);
     setSelectedImage(null);
   };
 
-  const handleFileSelect = (file: File) => {
-    if (!file || !file.type?.startsWith('image/')) return;
+  const getOverallGrade = (score: number) => {
+    if (score >= 9) return { grade: 'A+', color: 'text-emerald-400' };
+    if (score >= 8) return { grade: 'A', color: 'text-emerald-400' };
+    if (score >= 7) return { grade: 'B+', color: 'text-yellow-400' };
+    if (score >= 6) return { grade: 'B', color: 'text-yellow-400' };
+    if (score >= 5) return { grade: 'C+', color: 'text-orange-400' };
+    return { grade: 'C', color: 'text-red-400' };
+  };
 
-    // Free-tier limit gate
-    const ok = canStartAnalysis();
-    if (!ok) {
-      setShowPremiumModal(true);
-      return;
+  const handleFileSelect = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+      // Check if user can start analysis (free users limited to 3)
+      const canAnalyze = canStartAnalysis();
+      
+      if (!canAnalyze) {
+        // Show premium modal if limit reached
+        setShowPremiumModal(true);
+        return;
+      }
+      
+      handleImageSelect(file);
     }
-    handleImageSelect(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -199,7 +190,7 @@ export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }:
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/50 active:scale-95"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/50"
                 >
                   <Upload className="w-4 h-4 animate-bounce" />
                   Choose File
@@ -225,22 +216,17 @@ export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }:
         {selectedImage && (
           <div className="space-y-8 animate-fade-in">
             {isAnalyzing ? (
-              <LoadingSpinner
+              <LoadingSpinner 
                 message="Analyzing facial features and calculating scores…"
                 imageSrc={selectedImage}
               />
             ) : analysis && (
-              <>
-                {/* If your AnalysisResults doesn’t have `showPremiumButton` yet, this keeps TS happy */}
-                {/* @ts-ignore */}
-                <AnalysisResults
-                  analysis={analysis}
-                  imageUrl={selectedImage}
-                  isPremium={isPremium}
-                  showPremiumButton={true}
-                  onClearImage={handleClearImage}
-                />
-              </>
+              <AnalysisResults
+                analysis={analysis}
+                imageUrl={selectedImage}
+                isPremium={isPremium}
+                showPremiumButton={true}
+              />
             )}
           </div>
         )}
