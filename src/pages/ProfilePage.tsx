@@ -1,239 +1,327 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, ArrowLeft, Upload } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
-import AnalysisResults from '../components/AnalysisResults';
-import PremiumModal from '../components/PremiumModal';
-import StorageWarningModal from '../components/StorageWarningModal';
-import { useImageProcessing } from '../hooks/useImageProcessing';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Settings, User, Camera, Trophy, Globe, ChevronRight, Languages, AlertTriangle, Bell, Shield, Crown, FileText, MessageCircle } from 'lucide-react';
+import { getHistory } from '../lib/history';
+import LanguageModal from '../components/LanguageModal';
+import EditProfileModal from '../components/EditProfileModal';
+import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
+import TermsOfServiceModal from '../components/TermsOfServiceModal';
+import ContactModal from '../components/ContactModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { saveAnalysis, checkStorageLimit } from '../lib/history';
+import GradientButton from '../components/GradientButton';
 
-// ⬅️ Moved ABOVE the interface (fix)
-type PageType =
-  | 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results'
-  | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'hairstyles';
-
-interface AnalysisPageProps {
+interface ProfilePageProps {
   onBack: () => void;
-  onNavigate?: (page: PageType) => void;
-  onAnalysisComplete?: () => void;
+  onNavigate?: (page: string) => void;
 }
 
-export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }: AnalysisPageProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [showStorageWarning, setShowStorageWarning] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isPremium, user, canStartAnalysis, incrementAnalysisCount } = useAuth();
-  const { isAnalyzing, analysis, analyzeImage } = useImageProcessing();
-  const { t } = useLanguage();
+export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [privateMode, setPrivateMode] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
+  const [showTermsOfServiceModal, setShowTermsOfServiceModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [analysisCount, setAnalysisCount] = useState(0);
+  const [bestScore, setBestScore] = useState<number | null>(null);
+  const [percentile, setPercentile] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { language, setLanguage, t } = useLanguage();
+  const { user, signOut, isPremium } = useAuth();
 
-  useEffect(() => { console.log("MOUNT:", "src/pages/AnalysisPage.tsx"); }, []);
-
-  const handleImageSelect = async (file: File) => {
-    // Create temporary blob URL for preview only - NOT persisted
-    const tempUrl = URL.createObjectURL(file);
-    setSelectedImage(tempUrl);
-    
-    try {
-      // Check storage limit for premium users before analysis
-      if (user && isPremium) {
-        const { atLimit } = await checkStorageLimit({ userId: user.id });
-        if (atLimit) {
-          setShowStorageWarning(true);
-        }
-      }
-
-      const result = await analyzeImage(file, isPremium);
-      
-      // Increment analysis count for free users
-      if (result && !isPremium) {
-        incrementAnalysisCount();
-      }
-      
-      // Mark first analysis as complete
-      if (result && onAnalysisComplete) {
-        onAnalysisComplete();
-      }
-      
-      // Save analysis to history after successful completion
-      if (result && user) {
-        try {
-          // Check storage limit before saving
-          const { atLimit } = await checkStorageLimit({ userId: user.id });
-          
-          if (!atLimit) {
-            const saveResult = await saveAnalysis({
-              userId: user.id,
-              imageUrl: tempUrl, // temporary blob URL - edge function will replace with storage path
-              analysis: result
-            });
-            if (saveResult.ok) {
-              console.log('Analysis saved to history successfully');
-            } else {
-              console.error('Failed to save analysis:', saveResult.error);
-            }
-          } else {
-            // Show warning if at limit (analysis still shown, just not saved)
-            setShowStorageWarning(true);
-          }
-        } catch (error) {
-          console.error('Failed to save analysis to history:', error);
-          // Don't block UI - just log the error
-        }
-      }
-    } catch (error) {
-      console.error('Analysis failed:', error);
-    }
+  // Function to calculate percentile based on best score
+  const calculatePercentile = (score: number): number => {
+    if (score >= 1 && score <= 10) return 1;
+    if (score >= 11 && score <= 20) return 2;
+    if (score >= 21 && score <= 30) return 5;
+    if (score >= 31 && score <= 40) return 9;
+    if (score >= 41 && score <= 50) return 16;
+    if (score >= 51 && score <= 60) return 20;
+    if (score >= 61 && score <= 70) return 18;
+    if (score >= 71 && score <= 80) return 15;
+    if (score >= 81 && score <= 90) return 9;
+    if (score >= 91 && score <= 100) return 5;
+    return 1; // fallback
   };
 
-  const handlePremiumFeatureClick = () => setShowPremiumModal(true);
-
-  const handleClearImage = () => {
-    if (selectedImage) URL.revokeObjectURL(selectedImage);
-    setSelectedImage(null);
-  };
-
-  const getOverallGrade = (score: number) => {
-    if (score >= 9) return { grade: 'A+', color: 'text-emerald-400' };
-    if (score >= 8) return { grade: 'A', color: 'text-emerald-400' };
-    if (score >= 7) return { grade: 'B+', color: 'text-yellow-400' };
-    if (score >= 6) return { grade: 'B', color: 'text-yellow-400' };
-    if (score >= 5) return { grade: 'C+', color: 'text-orange-400' };
-    return { grade: 'C', color: 'text-red-400' };
-  };
-
-  const handleFileSelect = (file: File) => {
-    if (file && file.type.startsWith('image/')) {
-      // Check if user can start analysis (free users limited to 3)
-      const canAnalyze = canStartAnalysis();
-      
-      if (!canAnalyze) {
-        // Show premium modal if limit reached
-        setShowPremiumModal(true);
+  // Load user statistics
+  useEffect(() => {
+    const loadUserStats = async () => {
+      if (!user) {
+        setLoading(false);
         return;
       }
-      
-      handleImageSelect(file);
-    }
-  };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+      try {
+        // Load analysis history to get count and best score
+        const { ok, data } = await getHistory({ userId: user.id, limit: 100 });
+        if (ok && data) {
+          setAnalysisCount(data.length);
+          
+          // Find the best overall score
+          if (data.length > 0) {
+            const scores = data.map(analysis => analysis.analysis?.overall || 0);
+            const maxScore = Math.max(...scores);
+            if (maxScore > 0) {
+              setBestScore(maxScore);
+              setPercentile(calculatePercentile(maxScore));
+            } else {
+              setBestScore(null);
+              setPercentile(null);
+            }
+          } else {
+            setBestScore(null);
+            setPercentile(null);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    loadUserStats();
+  }, [user]);
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleFileSelect(file);
+  const getLanguageDisplay = () => {
+    return language === 'en' ? t.english : t.spanish;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-md mx-auto">
+        {!user ? (
+          <div className="text-center py-12">
+            <p className="text-slate-400 mb-4">Please sign in to view your profile</p>
+            <GradientButton onClick={onBack}>
+              Go Back
+            </GradientButton>
+          </div>
+        ) : (
+          <>
         {/* Header */}
-        <div className="flex items-center mb-8 pt-4 animate-fade-in">
+        <div className="flex items-center justify-between mb-8 pt-4">
           <button
             onClick={onBack}
-            className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 hover:bg-slate-700/60 transition-all duration-300 mr-4 group"
+            className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 transition-colors duration-200"
           >
-            <ArrowLeft className="w-5 h-5 text-white group-hover:text-blue-400 transition-colors duration-300" />
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{t.facialAnalysis}</h1>
-            <p className="text-slate-400">{t.aiPoweredAssessment}</p>
+          <h1 className="text-2xl font-bold text-white">{t.profile}</h1>
+          <button className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 transition-colors duration-200">
+            <Settings className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        {/* User Profile Card */}
+        <div className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-6 border border-slate-700/50 mb-6 animate-fade-in">
+          <div className="flex items-center mb-6">
+            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mr-4">
+              <User className="w-10 h-10 text-white" />
+            </div>
+            <div className="flex-1">
+                <h2 className="text-2xl font-bold text-white mb-1">
+                  {user.user_metadata?.display_name || user.email?.split('@')[0] || 'User'}
+                </h2>
+              <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-emerald-400 text-sm">Online</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Camera className="w-6 h-6 text-blue-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {loading ? '...' : analysisCount}
+              </div>
+              <div className="text-slate-400 text-sm">{t.analysis}</div>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Trophy className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {loading ? '...' : bestScore !== null ? Math.round(bestScore) : '-'}
+              </div>
+              <div className="text-slate-400 text-sm">{t.bestScore}</div>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Globe className="w-6 h-6 text-blue-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {loading ? '...' : percentile !== null ? `${percentile}%` : '-'}
+              </div>
+              <div className="text-slate-400 text-sm">% of analyzed faces</div>
+            </div>
+          </div>
+          
+          {/* Premium Status */}
+          {isPremium && (
+            <div className="mt-4 p-3 bg-gradient-to-r from-yellow-400/10 to-orange-500/10 rounded-2xl border border-yellow-400/20">
+              <div className="flex items-center justify-center space-x-2">
+                <Crown className="w-5 h-5 text-yellow-400" />
+                <span className="text-yellow-400 font-semibold">Premium Member</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Account Section */}
+        <div className="mb-6">
+          <h3 className="text-white font-semibold text-lg mb-4">{t.account}</h3>
+          <div className="bg-slate-800/60 backdrop-blur-sm rounded-3xl border border-slate-700/50 overflow-hidden animate-slide-up">
+            <button 
+              onClick={() => setShowEditProfileModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium">{t.editProfile}</div>
+                  <div className="text-slate-400 text-sm">{t.updatePersonalInfo}</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
+
+            <div className="border-t border-slate-700/50"></div>
+
+            <button 
+              onClick={() => setShowLanguageModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                  <Languages className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium">{t.language}</div>
+                  <div className="text-slate-400 text-sm">{t.currentLanguage.replace('English', getLanguageDisplay()).replace('Español', getLanguageDisplay())}</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
+
+            <div className="border-t border-slate-700/50"></div>
+
+            <button 
+              onClick={async () => {
+                await signOut();
+                onBack();
+              }}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium">Sign Out</div>
+                  <div className="text-slate-400 text-sm">Sign out of your account</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
           </div>
         </div>
 
-        {/* Upload Section */}
-        {!selectedImage && (
-          <div className="bg-gradient-to-br from-slate-800/60 via-blue-900/20 to-slate-800/60 backdrop-blur-sm rounded-3xl p-6 border border-blue-500/20 mb-8 animate-slide-up shadow-lg shadow-blue-500/10">
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-3xl p-8 transition-all ${
-                isDragging ? 'border-blue-400 bg-blue-400/10' : 'border-slate-600/50'
-              }`}
+        {/* Legal Section */}
+        <div className="mb-8">
+          <h3 className="text-white font-semibold text-lg mb-4">{t.legal}</h3>
+          <div className="bg-slate-800/60 backdrop-blur-sm rounded-3xl border border-slate-700/50 overflow-hidden animate-slide-up">
+            <button 
+              onClick={() => setShowTermsOfServiceModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
             >
-              <div className="flex flex-col items-center space-y-4">
-                {/* Camera Icon with Gradient Circle */}
-                <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/50">
-                    <Camera className="w-12 h-12 text-white" />
-                  </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-purple-400" />
                 </div>
-
-                {/* Upload Text */}
-                <div className="text-center space-y-2">
-                  <h2 className="text-xl font-bold text-white">Upload Your Photo</h2>
-                  <p className="text-slate-300 max-w-md text-sm leading-relaxed">
-                    Tips for best results:<br />
-                    <br />
-                    • Face the camera directly<br />
-                    • Ensure good, even lighting<br />
-                    • Keep a neutral expression<br />
-                    • Remove glasses or accessories
-                  </p>
+                <div className="text-left">
+                  <div className="text-white font-medium">{t.termsOfService}</div>
+                  <div className="text-slate-400 text-sm">View our terms and conditions</div>
                 </div>
-
-                {/* Choose File Button */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-semibold rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/50"
-                >
-                  <Upload className="w-4 h-4 animate-bounce" />
-                  Choose File
-                </button>
               </div>
-            </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
 
-            {/* Hidden File Input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileSelect(file);
-              }}
-              className="hidden"
-            />
-          </div>
-        )}
+            <div className="border-t border-slate-700/50"></div>
 
-        {/* Analysis Results */}
-        {selectedImage && (
-          <div className="space-y-8 animate-fade-in">
-            {isAnalyzing ? (
-              <LoadingSpinner 
-                message="Analyzing facial features and calculating scores…"
-                imageSrc={selectedImage}
-              />
-            ) : analysis && (
-              <AnalysisResults
-                analysis={analysis}
-                imageUrl={selectedImage}
-                isPremium={isPremium}
-                showPremiumButton={true}
-              />
-            )}
+            <button 
+              onClick={() => setShowPrivacyPolicyModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium">{t.privacyPolicy}</div>
+                  <div className="text-slate-400 text-sm">How we protect your data</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
+
+            <div className="border-t border-slate-700/50"></div>
+
+            <button 
+              onClick={() => setShowContactModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium">{t.contactSupport}</div>
+                  <div className="text-slate-400 text-sm">Get help and support</div>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
           </div>
+        </div>
+          </>
         )}
       </div>
 
-      <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
-      <StorageWarningModal isOpen={showStorageWarning} onClose={() => setShowStorageWarning(false)} />
+      <LanguageModal
+        isOpen={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
+        currentLanguage={language}
+        onLanguageChange={setLanguage}
+      />
+
+      <EditProfileModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+      />
+
+      <PrivacyPolicyModal
+        isOpen={showPrivacyPolicyModal}
+        onClose={() => setShowPrivacyPolicyModal(false)}
+      />
+
+      <TermsOfServiceModal
+        isOpen={showTermsOfServiceModal}
+        onClose={() => setShowTermsOfServiceModal(false)}
+      />
+
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
     </div>
   );
 }
