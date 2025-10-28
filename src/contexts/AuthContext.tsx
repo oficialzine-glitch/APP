@@ -10,7 +10,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
-  updatePremiumStatus: (isPremium: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,38 +20,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
 
-  // Check if user has premium access
-  const checkPremiumStatus = async (user: User | null) => {
+  const checkPremiumStatus = (user: User | null) => {
     if (!user) {
       setIsPremium(false);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('is_premium')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Error checking premium status:', error);
-      setIsPremium(false);
-      return;
-    }
-
-    if (!data) {
-      await supabase
-        .from('user_profiles')
-        .insert({ id: user.id, is_premium: false });
-      setIsPremium(false);
-      return;
-    }
-
-    setIsPremium(data.is_premium || false);
+    const premiumEmails = ['oficialzine@gmail.com'];
+    setIsPremium(premiumEmails.includes(user.email || ''));
   };
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -60,7 +38,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     }).catch((error) => {
       console.error('Session check failed:', error);
-      // Clear invalid tokens by signing out
       supabase.auth.signOut();
       setSession(null);
       setUser(null);
@@ -68,7 +45,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -102,25 +78,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return { error };
   };
 
-  const updatePremiumStatus = async (isPremium: boolean) => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('user_profiles')
-      .upsert({
-        id: user.id,
-        is_premium: isPremium,
-        updated_at: new Date().toISOString()
-      });
-
-    if (error) {
-      console.error('Error updating premium status:', error);
-      return;
-    }
-
-    setIsPremium(isPremium);
-  };
-
   const value = {
     user,
     session,
@@ -129,7 +86,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     signIn,
     signUp,
     signOut,
-    updatePremiumStatus,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
