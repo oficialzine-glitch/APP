@@ -10,6 +10,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
+  updatePremiumStatus: (isPremium: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,15 +22,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isPremium, setIsPremium] = useState(false);
 
   // Check if user has premium access
-  const checkPremiumStatus = (user: User | null) => {
+  const checkPremiumStatus = async (user: User | null) => {
     if (!user) {
       setIsPremium(false);
       return;
     }
-    
-    // Grant premium access to oficialzine@gmail.com
-    const premiumEmails = ['oficialzine@gmail.com'];
-    setIsPremium(premiumEmails.includes(user.email || ''));
+
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('is_premium')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking premium status:', error);
+      setIsPremium(false);
+      return;
+    }
+
+    if (!data) {
+      await supabase
+        .from('user_profiles')
+        .insert({ id: user.id, is_premium: false });
+      setIsPremium(false);
+      return;
+    }
+
+    setIsPremium(data.is_premium || false);
   };
 
   useEffect(() => {
@@ -83,6 +102,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return { error };
   };
 
+  const updatePremiumStatus = async (isPremium: boolean) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('user_profiles')
+      .upsert({
+        id: user.id,
+        is_premium: isPremium,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) {
+      console.error('Error updating premium status:', error);
+      return;
+    }
+
+    setIsPremium(isPremium);
+  };
+
   const value = {
     user,
     session,
@@ -91,6 +129,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     signIn,
     signUp,
     signOut,
+    updatePremiumStatus,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

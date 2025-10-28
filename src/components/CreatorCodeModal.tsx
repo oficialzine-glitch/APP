@@ -12,7 +12,8 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const { user, isPremium } = useAuth();
+  const [successMessage, setSuccessMessage] = useState('');
+  const { user, isPremium, updatePremiumStatus } = useAuth();
 
   if (!isOpen) return null;
 
@@ -21,29 +22,47 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
     setLoading(true);
     setError('');
 
-    // Check if user already has premium
-    if (isPremium) {
-      setError('You already have premium access!');
-      setLoading(false);
-      return;
-    }
+    const upperCode = code.toUpperCase();
 
-    // Validate creator code
-    if (code.toUpperCase() === 'X9Q7Z') {
-      // Simulate API call to grant premium
-      await new Promise(resolve => setTimeout(resolve, 1500));
+    if (upperCode === 'X9Q7Z') {
+      if (isPremium) {
+        setError('You already have premium access!');
+        setLoading(false);
+        return;
+      }
+
+      await updatePremiumStatus(true);
+      setSuccessMessage('Premium Activated!');
       setSuccess(true);
       setLoading(false);
-      
-      // Auto close after success
+
       setTimeout(() => {
         setSuccess(false);
         setCode('');
+        setSuccessMessage('');
         onClose();
-        // In a real app, you would update the user's premium status here
-        // For now, we'll just show success
       }, 2000);
-    } else {
+    }
+    else if (upperCode === 'B7X9Q') {
+      if (!isPremium) {
+        setError('You are already on a free account!');
+        setLoading(false);
+        return;
+      }
+
+      await updatePremiumStatus(false);
+      setSuccessMessage('Reverted to Free Account');
+      setSuccess(true);
+      setLoading(false);
+
+      setTimeout(() => {
+        setSuccess(false);
+        setCode('');
+        setSuccessMessage('');
+        onClose();
+      }, 2000);
+    }
+    else {
       setError('Invalid creator code. Please try again.');
       setLoading(false);
     }
@@ -53,6 +72,7 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
     setCode('');
     setError('');
     setSuccess(false);
+    setSuccessMessage('');
     onClose();
   };
 
@@ -81,16 +101,18 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
         {/* Success State */}
         {success && (
           <div className="text-center mb-6 animate-fade-in">
-            <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className={`w-16 h-16 ${successMessage.includes('Reverted') ? 'bg-gradient-to-r from-slate-500 to-slate-600' : 'bg-gradient-to-r from-emerald-500 to-teal-500'} rounded-full flex items-center justify-center mx-auto mb-4`}>
               <Crown className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-emerald-400 mb-2">Premium Activated!</h3>
-            <p className="text-slate-300 text-sm">You now have access to all premium features</p>
-            <div className="flex items-center justify-center space-x-2 mt-3">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-yellow-400 text-sm font-medium">Welcome to Premium</span>
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-            </div>
+            <h3 className={`text-xl font-bold mb-2 ${successMessage.includes('Reverted') ? 'text-slate-400' : 'text-emerald-400'}`}>{successMessage}</h3>
+            <p className="text-slate-300 text-sm">{successMessage.includes('Reverted') ? 'You are now on a free account' : 'You now have access to all premium features'}</p>
+            {!successMessage.includes('Reverted') && (
+              <div className="flex items-center justify-center space-x-2 mt-3">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <span className="text-yellow-400 text-sm font-medium">Welcome to Premium</span>
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+              </div>
+            )}
           </div>
         )}
 
@@ -104,12 +126,12 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
               </div>
             )}
 
-            {/* Already Premium Message */}
+            {/* Status Message */}
             {isPremium && (
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4 mb-4 animate-fade-in">
                 <div className="flex items-center justify-center space-x-2">
                   <Crown className="w-5 h-5 text-yellow-400" />
-                  <p className="text-yellow-400 text-sm font-medium">You already have premium access!</p>
+                  <p className="text-yellow-400 text-sm font-medium">You have premium access!</p>
                 </div>
               </div>
             )}
@@ -126,14 +148,14 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
                   placeholder="XXXXX"
                   maxLength={5}
                   required
-                  disabled={loading || isPremium}
+                  disabled={loading}
                 />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading || isPremium || !code.trim()}
+                disabled={loading || !code.trim()}
                 className="w-full py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
               >
                 {loading ? (
@@ -145,7 +167,7 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
                   <>
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                    <span className="relative">Activate Premium</span>
+                    <span className="relative">Redeem Code</span>
                   </>
                 )}
               </button>

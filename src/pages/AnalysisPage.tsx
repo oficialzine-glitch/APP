@@ -3,11 +3,10 @@ import { Camera, ArrowLeft, Upload } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnalysisResults from '../components/AnalysisResults';
 import PremiumModal from '../components/PremiumModal';
-import StorageWarningModal from '../components/StorageWarningModal';
 import { useImageProcessing } from '../hooks/useImageProcessing';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { saveAnalysis, checkStorageLimit } from '../lib/history';
+import { saveAnalysis } from '../lib/history';
 
 interface AnalysisPageProps {
   onBack: () => void;
@@ -20,7 +19,6 @@ type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'resul
 export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }: AnalysisPageProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [showStorageWarning, setShowStorageWarning] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isPremium, user, canStartAnalysis, incrementAnalysisCount } = useAuth();
@@ -230,7 +228,6 @@ export default function AnalysisPage({ onBack, onNavigate, onAnalysisComplete }:
       </div>
 
       <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
-      <StorageWarningModal isOpen={showStorageWarning} onClose={() => setShowStorageWarning(false)} />
     </div>
   );
 }
