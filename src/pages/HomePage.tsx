@@ -148,15 +148,30 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </div>
 
-      {/* Glowup Map Button */}
-      <div className="text-center mb-8">
-        <button
-          onClick={() => onNavigate('upload')}
-          className="relative px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all duration-300 transform hover:scale-105 active:scale-95 border border-cyan-400/30 hover:border-cyan-300/50 overflow-hidden isolate"
-        >
-          Get Your Glowup Map
-        </button>
-      </div>
+{/* Glowup Map Button (fixed) */}
+<div className="text-center mb-8">
+  <button
+    onClick={() => onNavigate('upload')}
+    className="relative px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600
+               text-white font-bold text-lg rounded-2xl
+               shadow-[0_0_28px_rgba(56,189,248,0.45)]
+               hover:shadow-[0_0_40px_rgba(56,189,248,0.6)]
+               transition-all duration-300 transform hover:scale-105 active:scale-95
+               border border-cyan-400/30 hover:border-cyan-300/50
+               overflow-visible"   // <-- was overflow-hidden (caused the cutoff)
+  >
+    <span className="relative z-10">Get Your Glowup Map</span>
+
+    {/* Soft halo that bleeds past the border (prevents hard edge) */}
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute -inset-px -z-10 rounded-2xl
+                 bg-gradient-to-r from-cyan-400/35 via-blue-500/25 to-blue-600/25
+                 blur-xl"
+    />
+  </button>
+</div>
+
 
       {/* Why Choose Section */}
       <div className="bg-gradient-to-br from-slate-800/80 via-blue-900/40 to-slate-800/80 backdrop-blur-sm rounded-3xl p-6 border border-blue-500/30 shadow-2xl shadow-blue-500/20 mb-8">
