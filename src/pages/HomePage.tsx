@@ -148,29 +148,41 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </div>
 
-{/* Glowup Map Button (fixed) */}
+{/* Glowup Map Button — anti-clip wrapper + halo */}
 <div className="text-center mb-8">
-  <button
-    onClick={() => onNavigate('upload')}
-    className="relative px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600
-               text-white font-bold text-lg rounded-2xl
-               shadow-[0_0_28px_rgba(56,189,248,0.45)]
-               hover:shadow-[0_0_40px_rgba(56,189,248,0.6)]
-               transition-all duration-300 transform hover:scale-105 active:scale-95
-               border border-cyan-400/30 hover:border-cyan-300/50
-               overflow-visible"   // <-- was overflow-hidden (caused the cutoff)
+  <div
+    className="relative inline-block overflow-visible isolate"
+    /* If some ancestor still clips, this wrapper lets the glow escape */
   >
-    <span className="relative z-10">Get Your Glowup Map</span>
-
-    {/* Soft halo that bleeds past the border (prevents hard edge) */}
+    {/* Soft halo behind button (not clipped by the button) */}
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -inset-px -z-10 rounded-2xl
-                 bg-gradient-to-r from-cyan-400/35 via-blue-500/25 to-blue-600/25
-                 blur-xl"
+      className="pointer-events-none absolute -inset-2 rounded-3xl
+                 bg-gradient-to-r from-cyan-400/35 via-blue-500/28 to-blue-600/28
+                 blur-2xl -z-10"
     />
-  </button>
+
+    <button
+      onClick={() => onNavigate('upload')}
+      className="relative px-8 py-4 rounded-2xl
+                 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600
+                 text-white font-bold text-lg
+                 transition-all duration-300 transform hover:scale-105 active:scale-95
+                 ring-1 ring-inset ring-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60
+                 overflow-visible"
+    >
+      {/* Subtle inner sheen to hide any anti-alias seam at the right edge */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-2xl
+                   [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)]
+                   opacity-70"
+      />
+      <span className="relative z-10">Get Your Glowup Map</span>
+    </button>
+  </div>
 </div>
+
 
 
 
