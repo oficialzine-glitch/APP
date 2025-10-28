@@ -21,21 +21,27 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
     setLoading(true);
     setError('');
 
-    if (code.toUpperCase() === 'X9Q7Z') {
-      if (isPremium) {
-        setError('You already have premium access!');
-        setLoading(false);
-        return;
-      }
+    // Check if user already has premium
+    if (isPremium) {
+      setError('You already have premium access!');
+      setLoading(false);
+      return;
+    }
 
+    // Validate creator code
+    if (code.toUpperCase() === 'X9Q7Z') {
+      // Simulate API call to grant premium
       await new Promise(resolve => setTimeout(resolve, 1500));
       setSuccess(true);
       setLoading(false);
-
+      
+      // Auto close after success
       setTimeout(() => {
         setSuccess(false);
         setCode('');
         onClose();
+        // In a real app, you would update the user's premium status here
+        // For now, we'll just show success
       }, 2000);
     } else {
       setError('Invalid creator code. Please try again.');
@@ -120,7 +126,7 @@ export default function CreatorCodeModal({ isOpen, onClose }: CreatorCodeModalPr
                   placeholder="XXXXX"
                   maxLength={5}
                   required
-                  disabled={loading}
+                  disabled={loading || isPremium}
                 />
               </div>
 

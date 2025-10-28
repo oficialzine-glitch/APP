@@ -20,17 +20,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
 
+  // Check if user has premium access
   const checkPremiumStatus = (user: User | null) => {
     if (!user) {
       setIsPremium(false);
       return;
     }
-
+    
+    // Grant premium access to oficialzine@gmail.com
     const premiumEmails = ['oficialzine@gmail.com'];
     setIsPremium(premiumEmails.includes(user.email || ''));
   };
 
   useEffect(() => {
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -38,6 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     }).catch((error) => {
       console.error('Session check failed:', error);
+      // Clear invalid tokens by signing out
       supabase.auth.signOut();
       setSession(null);
       setUser(null);
@@ -45,6 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     });
 
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
