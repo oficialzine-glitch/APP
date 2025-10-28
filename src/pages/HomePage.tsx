@@ -88,14 +88,15 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           {/* Subtle glowing border */}
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/40 to-cyan-500/30 rounded-2xl blur-sm scale-[1.02]"></div>
           
-          {/* Main image */}
-          <img
-            src={appFotoImage}
-            alt="AI Face Analysis"
-            className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20"
-          />
-        </div>
-      </div>
+{/* Main image */}
+<img
+  src={require('@/assets/homepageimgcopy.png')}
+  alt="AI Face Analysis"
+  className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
+  loading="eager"
+  decoding="async"
+/>
+
 
       {/* Start Analysis Button */}
       <div className="text-center mb-8">
