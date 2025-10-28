@@ -5,11 +5,13 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import appFotoImage from '../assets/homepageimg.png';
+// REMOVE the old image import if unused
+// import appFotoImage from '../assets/homepageimg.png';
+import homepageImg from '../assets/homepageimgcopy.png';
 import mapImage from '../assets/map copy copy copy copy copy copy.webp';
 
 interface HomePageProps {
-  onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth') => void;
+  onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth' | 'upload') => void;
 }
 
 export default function HomePage({ onNavigate }: HomePageProps) {
@@ -21,7 +23,6 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const { t } = useLanguage();
   const { user } = useAuth();
 
-  // Function to calculate percentile based on best score
   const calculatePercentile = (score: number): number => {
     if (score >= 1 && score <= 10) return 1;
     if (score >= 11 && score <= 20) return 2;
@@ -33,26 +34,21 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     if (score >= 71 && score <= 80) return 15;
     if (score >= 81 && score <= 90) return 9;
     if (score >= 91 && score <= 100) return 5;
-    return 1; // fallback
+    return 1;
   };
 
-  // Load user statistics
   useEffect(() => {
     const loadUserStats = async () => {
       if (!user) {
         setLoading(false);
         return;
       }
-
       try {
-        // Load analysis history to get count and best score
         const { ok, data } = await getHistory({ userId: user.id, limit: 100 });
         if (ok && data) {
           setAnalysisCount(data.length);
-          
-          // Find the best overall score
           if (data.length > 0) {
-            const scores = data.map(analysis => analysis.analysis?.overall || 0);
+            const scores = data.map(a => a.analysis?.overall || 0);
             const maxScore = Math.max(...scores);
             if (maxScore > 0) {
               setBestScore(maxScore);
@@ -72,13 +68,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         setLoading(false);
       }
     };
-
     loadUserStats();
   }, [user]);
 
-  const renderJoinPremiumButton = () => (
-    null
-  );
+  const renderJoinPremiumButton = () => null;
 
   const renderAnalysisTab = () => (
     <div className="max-w-2xl mx-auto pb-20 bg-transparent">
@@ -86,17 +79,18 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       <div className="text-center mb-8">
         <div className="relative inline-block">
           {/* Subtle glowing border */}
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/40 to-cyan-500/30 rounded-2xl blur-sm scale-[1.02]"></div>
-          
-{/* Main image */}
-<img
-  src={require('@/assets/homepageimgcopy.png')}
-  alt="AI Face Analysis"
-  className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
-  loading="eager"
-  decoding="async"
-/>
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 via-blue-500/40 to-cyan-500/30 rounded-2xl blur-sm scale-[1.02]" />
 
+          {/* Main image (fixed) */}
+          <img
+            src={homepageImg}
+            alt="AI Face Analysis"
+            className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
 
       {/* Start Analysis Button */}
       <div className="text-center mb-8">
@@ -141,7 +135,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             alt="Glowup Map - Your personalized transformation roadmap"
             className="w-full max-w-lg mx-auto rounded-2xl shadow-lg shadow-blue-500/20 border border-blue-500/20"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute bottom-4 left-4 right-4 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <h3 className="text-white font-bold text-xl mb-2">Discover Your Glowup Map</h3>
             <p className="text-blue-200 text-sm">Get your personalized transformation roadmap</p>
@@ -149,44 +143,25 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </div>
 
-{/* Glowup Map Button — anti-clip wrapper + halo */}
-<div className="text-center mb-8">
-  <div
-    className="relative inline-block overflow-visible isolate"
-    /* If some ancestor still clips, this wrapper lets the glow escape */
-  >
-    {/* Soft halo behind button (not clipped by the button) */}
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute -inset-2 rounded-3xl
-                 bg-gradient-to-r from-cyan-400/35 via-blue-500/28 to-blue-600/28
-                 blur-2xl -z-10"
-    />
-
-    <button
-      onClick={() => onNavigate('upload')}
-      className="relative px-8 py-4 rounded-2xl
-                 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600
-                 text-white font-bold text-lg
-                 transition-all duration-300 transform hover:scale-105 active:scale-95
-                 ring-1 ring-inset ring-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60
-                 overflow-visible"
-    >
-      {/* Subtle inner sheen to hide any anti-alias seam at the right edge */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-2xl
-                   [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)]
-                   opacity-70"
-      />
-      <span className="relative z-10">Get Your Glowup Map</span>
-    </button>
-  </div>
-</div>
-
-
-
-
+      {/* Glowup Map Button — anti-clip wrapper + halo */}
+      <div className="text-center mb-8">
+        <div className="relative inline-block overflow-visible isolate">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-2 rounded-3xl bg-gradient-to-r from-cyan-400/35 via-blue-500/28 to-blue-600/28 blur-2xl -z-10"
+          />
+          <button
+            onClick={() => onNavigate('upload')}
+            className="relative px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 ring-1 ring-inset ring-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 overflow-visible"
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 rounded-2xl [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)] opacity-70"
+            />
+            <span className="relative z-10">Get Your Glowup Map</span>
+          </button>
+        </div>
+      </div>
 
       {/* Why Choose Section */}
       <div className="bg-gradient-to-br from-slate-800/80 via-blue-900/40 to-slate-800/80 backdrop-blur-sm rounded-3xl p-6 border border-blue-500/30 shadow-2xl shadow-blue-500/20 mb-8">
@@ -318,7 +293,6 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
   const renderResultsTab = () => (
     <div className="max-w-2xl mx-auto pb-20 bg-transparent">
-      {/* Results page content will be redesigned */}
       <div className="text-center py-12">
         <p className="text-slate-400">Results page - Coming soon with better design</p>
       </div>
@@ -378,10 +352,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </div>
           </div>
         </>
-      ) : (
-          /* This should never show since non-authenticated users see AuthPage */
-          null
-      )}
+      ) : null}
 
       {/* Account Section */}
       {user && <div className="mb-6">
@@ -436,11 +407,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
       <div className="max-w-4xl mx-auto">
-
-        {/* Tab Content */}
         {renderAnalysisTab()}
-
-        {/* Premium Modal */}
         {showPremiumModal && (
           <PremiumModal onClose={() => setShowPremiumModal(false)} />
         )}
