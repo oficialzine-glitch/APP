@@ -95,7 +95,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                 <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-slate-900/90 to-black/80 backdrop-blur-md rounded-3xl flex items-center justify-center z-10 border-2 border-yellow-500/20">
                   <div className="text-center">
                     <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg shadow-yellow-500/50 animate-pulse">
-                      <Crown className="w-5 h-5 text-black" strokeWidth={2.5} />
+                      <Crown className="w-5 h-5 text-white" strokeWidth={2.5} />
                     </div>
                     <p className="text-yellow-400 font-bold text-xs tracking-wide">Premium</p>
                   </div>
@@ -190,25 +190,6 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
       </div>
 
       {/* Advanced Analysis Blocks */}
-      {!isPremium && (
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-slate-900/90 to-black/80 backdrop-blur-xl rounded-3xl z-20 flex items-center justify-center cursor-pointer border-2 border-yellow-500/30 shadow-2xl shadow-yellow-500/20" onClick={handlePremiumFeatureClick}>
-            <div className="text-center p-8">
-              <div className="relative inline-flex items-center justify-center mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur-2xl opacity-50 animate-pulse"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-500/50">
-                  <Crown className="w-10 h-10 text-black" strokeWidth={2.5} />
-                </div>
-              </div>
-              <h3 className="text-white text-3xl font-bold mb-3 bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent">Premium Feature</h3>
-              <p className="text-slate-300 mb-6 text-base max-w-md mx-auto leading-relaxed">Unlock detailed analysis and insights about your facial features</p>
-              <button className="px-8 py-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-lg shadow-yellow-500/50 hover:shadow-yellow-500/70">
-                Upgrade to Premium
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {(() => {
         // Helpers
         type PillProps = { label: string; value: number; hint?: string };
@@ -317,7 +298,27 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
         }
 
         return (
-          <section className={`mt-8 space-y-4 ${!isPremium ? 'blur-md pointer-events-none' : ''}`} aria-label="Advanced Analysis Blocks">
+          <div className="relative mt-8">
+            {!isPremium && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+                <div className="pointer-events-auto bg-gradient-to-br from-black/95 via-slate-900/95 to-black/95 backdrop-blur-xl rounded-3xl border-2 border-yellow-500/30 shadow-2xl shadow-yellow-500/20 p-12 cursor-pointer max-w-xl" onClick={handlePremiumFeatureClick}>
+                  <div className="text-center">
+                    <div className="relative inline-flex items-center justify-center mb-6">
+                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+                      <div className="relative w-20 h-20 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-500/50">
+                        <Crown className="w-10 h-10 text-white" strokeWidth={2.5} />
+                      </div>
+                    </div>
+                    <h3 className="text-white text-3xl font-bold mb-3 bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent">Premium Feature</h3>
+                    <p className="text-slate-300 mb-6 text-base leading-relaxed">Unlock detailed analysis and insights about your facial features</p>
+                    <button className="px-8 py-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-lg shadow-yellow-500/50 hover:shadow-yellow-500/70">
+                      Upgrade to Premium
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <section className={`space-y-4 ${!isPremium ? 'blur-md pointer-events-none' : ''}`} aria-label="Advanced Analysis Blocks">
             {/* Symmetry */}
             {analysis?.symmetry?.score != null && (
               <PillMeterInline
@@ -639,6 +640,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
               return <SkinReportInline data={analysis?.skinReport as any} />;
             })()}
           </section>
+          </div>
         );
       })()}
 
