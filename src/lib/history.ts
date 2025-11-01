@@ -73,3 +73,16 @@ export async function deleteAnalysis(id: string) {
   }
   return { ok: true };
 }
+
+export async function getAnalysisCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from(TABLE)
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("Error getting analysis count:", error);
+    return 0;
+  }
+  return count ?? 0;
+}

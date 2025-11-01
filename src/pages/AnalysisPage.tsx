@@ -5,11 +5,12 @@ import ImageUpload from '../components/ImageUpload';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnalysisResults from '../components/AnalysisResults';
 import PremiumModal from '../components/PremiumModal';
+import StorageLimitModal from '../components/StorageLimitModal';
 import GradientButton from '../components/GradientButton';
 import { useImageProcessing } from '../hooks/useImageProcessing';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { saveAnalysis } from '../lib/history';
+import { saveAnalysis, getAnalysisCount } from '../lib/history';
 
 interface AnalysisPageProps {
   onBack: () => void;
@@ -19,6 +20,8 @@ interface AnalysisPageProps {
 export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showStorageLimitModal, setShowStorageLimitModal] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const { isPremium, user } = useAuth();
   const { isAnalyzing, analysis, analyzeImage } = useImageProcessing();
   const { t } = useLanguage();
@@ -26,13 +29,25 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
   useEffect(() => { console.log("MOUNT:", "src/pages/AnalysisPage.tsx"); }, []);
 
   const handleImageSelect = async (file: File) => {
+    if (user && isPremium) {
+      const count = await getAnalysisCount(user.id);
+      if (count >= 10) {
+        setPendingFile(file);
+        setShowStorageLimitModal(true);
+        return;
+      }
+    }
+
+    await performAnalysis(file);
+  };
+
+  const performAnalysis = async (file: File) => {
     const url = URL.createObjectURL(file);
     setSelectedImage(url);
-    
+
     try {
       const result = await analyzeImage(file);
-      
-      // Save analysis to history after successful completion
+
       if (result && user) {
         try {
           const saveResult = await saveAnalysis({
@@ -47,11 +62,17 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
           }
         } catch (error) {
           console.error('Failed to save analysis to history:', error);
-          // Don't block UI - just log the error
         }
       }
     } catch (error) {
       console.error('Analysis failed:', error);
+    }
+  };
+
+  const handleContinueWithoutSaving = () => {
+    if (pendingFile) {
+      performAnalysis(pendingFile);
+      setPendingFile(null);
     }
   };
 
@@ -123,6 +144,14 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
       </div>
 
       <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
+      <StorageLimitModal
+        isOpen={showStorageLimitModal}
+        onClose={() => {
+          setShowStorageLimitModal(false);
+          setPendingFile(null);
+        }}
+        onContinue={handleContinueWithoutSaving}
+      />
     </div>
   );
 }
