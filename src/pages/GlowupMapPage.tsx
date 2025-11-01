@@ -275,23 +275,35 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
 
   // Calculate progress for active module
   const calculateProgress = () => {
-    let allTasks: string[] = [];
-    
+    let dailyTasks: string[] = [];
+    let weeklyTasks: string[] = [];
+
     if (activeTab === "symmetry" && plan?.symmetryPlan) {
-      allTasks = [...(plan.symmetryPlan.daily || []), ...(plan.symmetryPlan.weekly || [])];
+      dailyTasks = plan.symmetryPlan.daily || [];
+      weeklyTasks = plan.symmetryPlan.weekly || [];
     } else if (activeTab === "faceShape" && plan?.faceShapePlan) {
-      allTasks = [...(plan.faceShapePlan.daily || []), ...(plan.faceShapePlan.weekly || [])];
+      dailyTasks = plan.faceShapePlan.daily || [];
+      weeklyTasks = plan.faceShapePlan.weekly || [];
     } else {
       const activeWeakPoint = plan?.weakPoints?.find(wp => wp.key === activeTab);
       if (activeWeakPoint) {
-        allTasks = [...(activeWeakPoint.daily || []), ...(activeWeakPoint.weekly || [])];
+        dailyTasks = activeWeakPoint.daily || [];
+        weeklyTasks = activeWeakPoint.weekly || [];
       }
     }
-    
-    if (allTasks.length === 0) return 0;
-    
-    const completedTasks = allTasks.filter((task, index) => taskChecks[`${activeTab}-${index}`]).length;
-    return Math.round((completedTasks / allTasks.length) * 100);
+
+    const totalTasks = dailyTasks.length + weeklyTasks.length;
+    if (totalTasks === 0) return 0;
+
+    let completedCount = 0;
+    dailyTasks.forEach((_, index) => {
+      if (taskChecks[`${activeTab}-daily-${index}`]) completedCount++;
+    });
+    weeklyTasks.forEach((_, index) => {
+      if (taskChecks[`${activeTab}-weekly-${index}`]) completedCount++;
+    });
+
+    return Math.round((completedCount / totalTasks) * 100);
   };
 
   // Get difficulty color
