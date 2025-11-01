@@ -88,15 +88,13 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
           return (
             <div
               key={scoreItem.key}
-              className={`bg-slate-800/60 backdrop-blur-sm rounded-3xl p-5 border border-slate-700/50 text-center transition-all duration-300 overflow-visible relative ${isBlurred ? 'cursor-pointer hover:border-yellow-500/30' : 'hover:border-blue-500/30'}`}
+              className={`bg-slate-800/60 backdrop-blur-sm rounded-3xl p-5 border border-slate-700/50 text-center transition-all duration-300 overflow-visible relative ${isBlurred ? 'cursor-pointer' : 'hover:border-blue-500/30'}`}
               onClick={isBlurred ? handlePremiumFeatureClick : undefined}
             >
               {isBlurred && (
-                <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-slate-900/90 to-black/80 backdrop-blur-md rounded-3xl flex items-center justify-center z-10 border-2 border-yellow-500/20">
+                <div className="absolute inset-0 backdrop-blur-md rounded-3xl flex items-center justify-center z-10">
                   <div className="text-center">
-                    <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg shadow-yellow-500/50 animate-pulse">
-                      <Crown className="w-5 h-5 text-white" strokeWidth={2.5} />
-                    </div>
+                    <Crown className="w-8 h-8 text-yellow-400 mx-auto mb-2" strokeWidth={2.5} />
                     <p className="text-yellow-400 font-bold text-xs tracking-wide">Premium</p>
                   </div>
                 </div>
