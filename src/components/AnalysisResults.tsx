@@ -92,7 +92,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
               onClick={isBlurred ? handlePremiumFeatureClick : undefined}
             >
               {isBlurred && (
-                <div className="absolute inset-0 backdrop-blur-md rounded-3xl flex items-center justify-center z-10">
+                <div className="absolute inset-0 bg-slate-900/95 rounded-3xl flex items-center justify-center z-10">
                   <div className="text-center">
                     <Crown className="w-8 h-8 text-yellow-400 mx-auto mb-2" strokeWidth={2.5} />
                     <p className="text-yellow-400 font-bold text-xs tracking-wide">Premium</p>
