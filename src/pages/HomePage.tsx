@@ -79,7 +79,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
           {/* Main image (fixed) */}
           <img
-            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/homepage-image.png"
+            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/neon-face-scan.png"
             alt="AI Face Analysis"
             className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
             loading="eager"
@@ -127,7 +127,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       <div className="text-center mb-8 animate-fade-in">
         <div className="relative inline-block group cursor-pointer hover:scale-105 transition-all duration-300">
           <img
-            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/map-promo.png"
+            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/map.webp"
             alt="Glowup Map - Your personalized transformation roadmap"
             className="w-full max-w-lg mx-auto rounded-2xl shadow-lg shadow-blue-500/20 border border-blue-500/20"
           />
