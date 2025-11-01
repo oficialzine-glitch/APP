@@ -1,5 +1,4 @@
 import React from 'react';
-import phoneMockupImage from '../assets/phone-mockup copy.png';
 
 interface IntroductionPageProps {
   onGetStarted: () => void;
@@ -34,8 +33,8 @@ export default function IntroductionPage({ onGetStarted, onSignIn }: Introductio
       <div className="flex-1 flex flex-col items-center justify-between px-6 py-12 relative z-10">
         {/* Phone Mockup */}
         <div className="flex-1 flex items-center justify-center">
-          <img 
-            src={phoneMockupImage}
+          <img
+            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/phone-mockup.png"
             alt="NextFace AI phone mockup"
             className="w-56 h-auto shadow-2xl"
           />

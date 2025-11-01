@@ -5,10 +5,6 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-// REMOVE the old image import if unused
-// import appFotoImage from '../assets/homepageimgcopy.png';
-import homepageImg from '../assets/homepageimgcopy.png';
-import mapImage from '../assets/map copy copy copy copy copy copy.webp';
 
 interface HomePageProps {
   onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth' | 'upload') => void;
@@ -83,8 +79,8 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
           {/* Main image (fixed) */}
           <img
-            src={homepageImg}
-            alt="AI Face Analyss"
+            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/homepage-image.png"
+            alt="AI Face Analysis"
             className="relative z-10 w-full max-w-md mx-auto rounded-2xl shadow-lg border border-cyan-500/20 object-cover select-none"
             loading="eager"
             decoding="async"
@@ -130,8 +126,8 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       {/* Glowup Map Promotional Image */}
       <div className="text-center mb-8 animate-fade-in">
         <div className="relative inline-block group cursor-pointer hover:scale-105 transition-all duration-300">
-          <img 
-            src={mapImage}
+          <img
+            src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/map-promo.png"
             alt="Glowup Map - Your personalized transformation roadmap"
             className="w-full max-w-lg mx-auto rounded-2xl shadow-lg shadow-blue-500/20 border border-blue-500/20"
           />
