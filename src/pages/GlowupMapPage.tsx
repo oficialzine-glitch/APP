@@ -562,16 +562,48 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
               </div>
             </div>
             
-            {/* Potential improvement text */}
-            <div className="text-center mb-8">
-              <p className="text-slate-300 text-sm">
-                {plan?.maxPotential?.rangeText 
-                  ? `Potential improvement: ${plan.maxPotential.rangeText}`
-                  : plan?.maxPotential?.low && plan?.maxPotential?.high
-                    ? `Potential improvement: ${plan.maxPotential.low}-${plan.maxPotential.high}`
-                    : 'Potential improvement: Available with optimization'
-                }
-              </p>
+            {/* Potential improvement bar */}
+            <div className="mb-8 animate-slide-up">
+              <div className="max-w-xl mx-auto">
+                <h3 className="text-center text-slate-300 text-sm font-semibold mb-3 tracking-wide uppercase">
+                  Potential Improvement Score
+                </h3>
+
+                {plan?.maxPotential?.high ? (
+                  <div className="relative">
+                    {/* Progress bar background */}
+                    <div className="h-8 w-full rounded-full bg-slate-800/60 border border-slate-700/50 overflow-hidden shadow-inner">
+                      {/* Gradient fill */}
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 rounded-full transition-all duration-1000 ease-out relative overflow-hidden shadow-lg shadow-blue-500/30"
+                        style={{ width: `${plan.maxPotential.high}%` }}
+                      >
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                      </div>
+                    </div>
+
+                    {/* Score label */}
+                    <div className="flex items-center justify-center mt-3">
+                      <div className="px-4 py-2 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-blue-600/20 rounded-full border border-cyan-400/30">
+                        <span className="text-cyan-300 font-bold text-lg">
+                          {plan.maxPotential.low && plan.maxPotential.high
+                            ? `${plan.maxPotential.low}-${plan.maxPotential.high}`
+                            : plan.maxPotential.high
+                          }
+                        </span>
+                        <span className="text-slate-400 text-sm ml-2">/ 100</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <div className="px-4 py-2 bg-slate-800/60 rounded-full border border-slate-700/50 inline-block">
+                      <span className="text-slate-400 text-sm">Available with optimization</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Tabs */}
@@ -823,13 +855,26 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
         .animate-spin-slow {
           animation: spin 4s linear infinite;
         }
-        
+
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+
         @keyframes spin {
           from {
             transform: rotate(0deg);
           }
           to {
             transform: rotate(360deg);
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
           }
         }
       `}</style>
