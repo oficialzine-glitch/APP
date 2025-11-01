@@ -4,6 +4,7 @@ import { getHistory, deleteAnalysis, AnalysisRow } from '../lib/history';
 import { useAuth } from '../contexts/AuthContext';
 import AnalysisResults from '../components/AnalysisResults';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PremiumModal from '../components/PremiumModal';
 
 interface PreviousAnalysesPageProps {
   onBack: () => void;
@@ -13,6 +14,7 @@ export default function PreviousAnalysesPage({ onBack }: PreviousAnalysesPagePro
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const { user, isPremium } = useAuth();
 
   useEffect(() => {
@@ -95,6 +97,7 @@ export default function PreviousAnalysesPage({ onBack }: PreviousAnalysesPagePro
               analysis={selectedAnalysis.analysis}
               imageUrl={selectedAnalysis.image_url}
               isPremium={isPremium}
+              onPremiumClick={() => setShowPremiumModal(true)}
             />
           </div>
         </div>
@@ -243,6 +246,8 @@ export default function PreviousAnalysesPage({ onBack }: PreviousAnalysesPagePro
           </div>
         )}
       </div>
+
+      <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );
 }

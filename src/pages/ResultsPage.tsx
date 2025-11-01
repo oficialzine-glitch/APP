@@ -4,6 +4,7 @@ import { getHistory, deleteAnalysis, AnalysisRow } from '../lib/history';
 import { FacialAnalysis } from '../types';
 import AnalysisResults from '../components/AnalysisResults';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,6 +16,7 @@ export default function ResultsPage({ onNavigate }: ResultsPageProps) {
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const { t } = useLanguage();
   const { user, isPremium } = useAuth();
 
@@ -96,6 +98,7 @@ export default function ResultsPage({ onNavigate }: ResultsPageProps) {
               analysis={selectedAnalysis.analysis}
               imageUrl={selectedAnalysis.image_url}
               isPremium={isPremium}
+              onPremiumClick={() => setShowPremiumModal(true)}
             />
           </div>
         </div>
@@ -216,6 +219,8 @@ export default function ResultsPage({ onNavigate }: ResultsPageProps) {
           </>
         )}
       </div>
+
+      <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );
 }

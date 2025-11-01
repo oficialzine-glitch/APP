@@ -6,6 +6,7 @@ type Props = {
   imageUrl?: string | null;  // optional; used for the profile preview
   isPremium?: boolean;
   onClearImage?: () => void; // optional (used by AnalysisPage only)
+  onPremiumClick?: () => void; // callback to show premium modal
 };
 
 const FACE_SHAPE_FACTS: Record<string, string[]> = {
@@ -39,13 +40,14 @@ const FACE_SHAPE_FACTS: Record<string, string[]> = {
   ]
 };
 
-export default function AnalysisResults({ analysis, imageUrl, isPremium = false, onClearImage }: Props) {
+export default function AnalysisResults({ analysis, imageUrl, isPremium = false, onClearImage, onPremiumClick }: Props) {
   // Extract safe overall score from analysis
   const safeOverallScore = analysis?.overall ?? 0;
 
   const handlePremiumFeatureClick = () => {
-    // This would open premium modal - for now just log
-    console.log('Premium feature clicked');
+    if (onPremiumClick) {
+      onPremiumClick();
+    }
   };
 
   return (
@@ -186,6 +188,20 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
       </div>
 
       {/* Advanced Analysis Blocks */}
+      {!isPremium && (
+        <div className="relative">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md rounded-3xl z-20 flex items-center justify-center cursor-pointer" onClick={handlePremiumFeatureClick}>
+            <div className="text-center p-8">
+              <div className="w-16 h-16 text-yellow-400 mx-auto mb-4 text-5xl">👑</div>
+              <h3 className="text-white text-2xl font-bold mb-2">Premium Feature</h3>
+              <p className="text-slate-300 mb-4">Unlock detailed analysis and insights</p>
+              <button className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-xl hover:scale-105 transition-transform">
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {(() => {
         // Helpers
         type PillProps = { label: string; value: number; hint?: string };
@@ -294,7 +310,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
         }
 
         return (
-          <section className="mt-8 space-y-4" aria-label="Advanced Analysis Blocks">
+          <section className={`mt-8 space-y-4 ${!isPremium ? 'blur-md pointer-events-none' : ''}`} aria-label="Advanced Analysis Blocks">
             {/* Symmetry */}
             {analysis?.symmetry?.score != null && (
               <PillMeterInline

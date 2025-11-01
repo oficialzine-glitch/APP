@@ -130,6 +130,7 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
                 imageUrl={selectedImage}
                 isPremium={isPremium}
                 onClearImage={handleClearImage}
+                onPremiumClick={handlePremiumFeatureClick}
               />
             )}
 
