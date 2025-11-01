@@ -19,7 +19,7 @@ export default function StorageLimitModal({ isOpen, onClose, onContinue }: Stora
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 max-w-md w-full border border-yellow-500/30 shadow-2xl shadow-yellow-500/20 animate-scale-in">
+      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 max-w-md w-full border border-blue-500/30 shadow-2xl shadow-blue-500/20 animate-scale-in">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 transition-colors"
@@ -28,8 +28,8 @@ export default function StorageLimitModal({ isOpen, onClose, onContinue }: Stora
         </button>
 
         <div className="flex items-center justify-center mb-6">
-          <div className="p-4 bg-yellow-500/20 rounded-full border border-yellow-500/30">
-            <AlertCircle className="w-8 h-8 text-yellow-400" />
+          <div className="p-4 bg-blue-500/20 rounded-full border border-blue-500/30">
+            <AlertCircle className="w-8 h-8 text-blue-400" />
           </div>
         </div>
 
@@ -54,7 +54,7 @@ export default function StorageLimitModal({ isOpen, onClose, onContinue }: Stora
           </button>
           <button
             onClick={handleContinue}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-yellow-500/30"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-blue-500/30"
           >
             Continue Anyway
           </button>
