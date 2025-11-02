@@ -636,7 +636,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                     Premium
                   </div>
                   <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
-                    Upgrade to unlock
+                    Go premium to reveal your full analysis
                   </div>
                 </div>
               </div>
