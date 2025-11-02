@@ -634,52 +634,33 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                   className="drop-shadow-2xl"
                 >
                   <defs>
-                    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.9" />
-                      <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.95" />
-                      <stop offset="100%" stopColor="#d97706" stopOpacity="0.9" />
+                    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#fbbf24" />
+                      <stop offset="100%" stopColor="#f59e0b" />
                     </linearGradient>
-                    <filter id="glow">
-                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                      <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                      </feMerge>
-                    </filter>
                   </defs>
 
-                  {/* Crown base */}
+                  {/* Simple bold crown - flat design */}
                   <path
-                    d="M 25 75 L 30 45 L 45 55 L 60 35 L 75 55 L 90 45 L 95 75 Z"
+                    d="M 35 50 L 40 35 L 48 43 L 60 28 L 72 43 L 80 35 L 85 50 L 85 70 L 35 70 Z"
                     fill="url(#crownGradient)"
-                    filter="url(#glow)"
-                    stroke="#fbbf24"
-                    strokeWidth="2"
+                    stroke="none"
                   />
 
-                  {/* Crown gems */}
-                  <circle cx="30" cy="45" r="4" fill="#22d3ee" opacity="0.9" />
-                  <circle cx="60" cy="35" r="5" fill="#06b6d4" opacity="0.9" />
-                  <circle cx="90" cy="45" r="4" fill="#22d3ee" opacity="0.9" />
-
-                  {/* Crown band */}
+                  {/* Crown base band */}
                   <rect
-                    x="25"
-                    y="75"
-                    width="70"
-                    height="15"
-                    fill="url(#crownGradient)"
-                    filter="url(#glow)"
-                    stroke="#fbbf24"
-                    strokeWidth="2"
-                    rx="2"
+                    x="35"
+                    y="70"
+                    width="50"
+                    height="12"
+                    fill="#f59e0b"
+                    stroke="none"
                   />
 
-                  {/* Decorative details */}
-                  <line x1="35" y1="80" x2="35" y2="85" stroke="#d97706" strokeWidth="1.5" />
-                  <line x1="50" y1="80" x2="50" y2="85" stroke="#d97706" strokeWidth="1.5" />
-                  <line x1="65" y1="80" x2="65" y2="85" stroke="#d97706" strokeWidth="1.5" />
-                  <line x1="80" y1="80" x2="80" y2="85" stroke="#d97706" strokeWidth="1.5" />
+                  {/* Three crown points on top */}
+                  <rect x="38" y="48" width="8" height="4" fill="#fbbf24" />
+                  <rect x="56" y="48" width="8" height="4" fill="#fbbf24" />
+                  <rect x="74" y="48" width="8" height="4" fill="#fbbf24" />
                 </svg>
 
                 <div className="mt-3 text-center">
@@ -687,7 +668,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                     Premium
                   </div>
                   <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
-                    Upgrade to premium to unlock your full facial analysis
+                    Upgrade to unlock
                   </div>
                 </div>
               </div>
