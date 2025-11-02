@@ -296,17 +296,9 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
         }
 
         return (
-          <section className={`mt-8 space-y-4 relative ${!isPremium ? 'blur-md pointer-events-none' : ''}`} aria-label="Advanced Analysis Blocks">
-            {/* Watermark overlay for free users - centered in the middle */}
-            {!isPremium && (
-              <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-                <img
-                  src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/premium_icon_1.png"
-                  alt="Premium"
-                  className="w-32 h-32 opacity-80"
-                />
-              </div>
-            )}
+          <div className="relative mt-8">
+            {/* Blurred content section */}
+            <section className={`space-y-4 ${!isPremium ? 'blur-md pointer-events-none' : ''}`} aria-label="Advanced Analysis Blocks">
             {/* Symmetry */}
             {analysis?.symmetry?.score != null && (
               <PillMeterInline
@@ -628,6 +620,18 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
               return <SkinReportInline data={analysis?.skinReport as any} />;
             })()}
           </section>
+
+          {/* Watermark overlay for free users - positioned over the blur */}
+          {!isPremium && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <img
+                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/premium_icon_1.png"
+                alt="Premium"
+                className="w-32 h-32 opacity-80"
+              />
+            </div>
+          )}
+        </div>
         );
       })()}
 
