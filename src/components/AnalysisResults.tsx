@@ -656,58 +656,52 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                     fill="#f59e0b"
                     stroke="none"
                   />
+                </svg>
 
-import { Crown } from "lucide-react";
-
-// ...
-
-<div className="flex flex-col items-center">
-  {/* Lucide crown replaces old SVG */}
-  <Crown
-    className="w-[120px] h-[120px] text-yellow-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]"
-    strokeWidth={2.5}
-  />
-
-  <div className="mt-3 text-center">
-    <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
-      Premium
-    </div>
-    <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
-      Upgrade to unlock
-    </div>
-  </div>
-</div>
-
-
-      {/* Face Shape — inline block (no new component) — PREMIUM ONLY */}
-      {isPremium && analysis?.faceShape && (() => {
-        const shape = String(analysis.faceShape).toLowerCase();
-        const facts = FACE_SHAPE_FACTS[shape] || [];
-        const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-
-        return (
-          <div className="mt-8 mb-12 bg-slate-800/60 backdrop-blur-sm rounded-3xl p-6 border border-blue-500/20 hover:border-blue-500/30 transition-all duration-500">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-2xl font-bold text-white">Face Shape</h3>
-              <span className="text-xs px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-                {shape}
-              </span>
+                <div className="mt-3 text-center">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                    Premium
+                  </div>
+                  <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
+                    Upgrade to unlock
+                  </div>
+                </div>
+              </div>
             </div>
+          )}
 
-            <div className="text-center">
-              <div className="text-white text-xl font-semibold">Face shape: {cap(shape)}</div>
-              <div className="text-slate-400 text-sm mt-1">Detected facial structure</div>
-            </div>
+          {/* Face Shape — inline block (no new component) — PREMIUM ONLY */}
+          {isPremium && analysis?.faceShape && (() => {
+            const shape = String(analysis.faceShape).toLowerCase();
+            const facts = FACE_SHAPE_FACTS[shape] || [];
+            const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-            {facts.length > 0 && (
-              <ul className="mt-4 space-y-1 text-slate-300 text-sm">
-                <li>• {facts[0]}</li>
-                <li>• {facts[1]}</li>
-              </ul>
-            )}
-          </div>
-        );
-      })()}
+            return (
+              <div className="mt-8 mb-12 bg-slate-800/60 backdrop-blur-sm rounded-3xl p-6 border border-blue-500/20 hover:border-blue-500/30 transition-all duration-500">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-2xl font-bold text-white">Face Shape</h3>
+                  <span className="text-xs px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+                    {shape}
+                  </span>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-white text-xl font-semibold">Face shape: {cap(shape)}</div>
+                  <div className="text-slate-400 text-sm mt-1">Detected facial structure</div>
+                </div>
+
+                {facts.length > 0 && (
+                  <ul className="mt-4 space-y-1 text-slate-300 text-sm">
+                    <li>• {facts[0]}</li>
+                    <li>• {facts[1]}</li>
+                  </ul>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      );
+    })()}
     </div>
   );
 }
