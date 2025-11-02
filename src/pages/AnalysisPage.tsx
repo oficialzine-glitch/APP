@@ -96,17 +96,27 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center mb-8 pt-4 animate-fade-in">
-          <button
-            onClick={onBack}
-            className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 hover:bg-slate-700/60 transition-all duration-300 mr-4 group"
-          >
-            <ArrowLeft className="w-5 h-5 text-white group-hover:text-blue-400 transition-colors duration-300" />
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{t.facialAnalysis}</h1>
-            <p className="text-slate-400">{t.aiPoweredAssessment}</p>
+        <div className="flex items-center justify-between mb-8 pt-4 animate-fade-in">
+          <div className="flex items-center">
+            <button
+              onClick={onBack}
+              className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 hover:bg-slate-700/60 transition-all duration-300 mr-4 group"
+            >
+              <ArrowLeft className="w-5 h-5 text-white group-hover:text-blue-400 transition-colors duration-300" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-white">{t.facialAnalysis}</h1>
+              <p className="text-slate-400">{t.aiPoweredAssessment}</p>
+            </div>
           </div>
+          {selectedImage && !isAnalyzing && (
+            <button
+              onClick={handleClearImage}
+              className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-red-500/30 hover:bg-slate-700/60 transition-all duration-300 group"
+            >
+              <X className="w-5 h-5 text-slate-400 group-hover:text-red-400 transition-colors duration-300" />
+            </button>
+          )}
         </div>
 
         {/* Upload Section */}

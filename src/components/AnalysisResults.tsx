@@ -52,18 +52,6 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Header with Advanced Badge */}
-      <div className="flex items-center justify-between mb-6 animate-fade-in">
-        <div className="px-4 py-2 bg-blue-500/20 rounded-full flex items-center space-x-2 border border-blue-500/30">
-          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-          <span className="text-blue-400 text-sm font-medium">Advanced </span>
-        </div>
-        {onClearImage && (
-          <button onClick={onClearImage} className="p-2 bg-slate-800/60 rounded-full hover:bg-slate-700/60 transition-colors">
-            <X className="w-5 h-5 text-slate-400 hover:text-white" />
-          </button>
-        )}
-      </div>
 
       {/* Profile Photo */}
       {imageUrl && (
