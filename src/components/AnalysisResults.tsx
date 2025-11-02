@@ -625,38 +625,11 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
           {!isPremium && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
               <div className="flex flex-col items-center justify-center">
-                <svg
-                  width="120"
-                  height="120"
-                  viewBox="0 0 120 120"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="drop-shadow-2xl"
-                >
-                  <defs>
-                    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#fbbf24" />
-                      <stop offset="100%" stopColor="#f59e0b" />
-                    </linearGradient>
-                  </defs>
-
-                  {/* Simple bold crown - flat design */}
-                  <path
-                    d="M 35 50 L 40 35 L 48 43 L 60 28 L 72 43 L 80 35 L 85 50 L 85 70 L 35 70 Z"
-                    fill="url(#crownGradient)"
-                    stroke="none"
-                  />
-
-                  {/* Crown base band */}
-                  <rect
-                    x="35"
-                    y="70"
-                    width="50"
-                    height="12"
-                    fill="#f59e0b"
-                    stroke="none"
-                  />
-                </svg>
+                <Crown
+                  className="w-[120px] h-[120px] text-yellow-400 drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+                  strokeWidth={2}
+                  fill="currentColor"
+                />
 
                 <div className="mt-3 text-center">
                   <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
