@@ -623,12 +623,74 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
 
           {/* Watermark overlay for free users - positioned over the blur */}
           {!isPremium && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <img
-                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/premium_icon_1.png"
-                alt="Premium"
-                className="w-32 h-32 opacity-80"
-              />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <div className="flex flex-col items-center justify-center">
+                <svg
+                  width="120"
+                  height="120"
+                  viewBox="0 0 120 120"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="drop-shadow-2xl"
+                >
+                  <defs>
+                    <linearGradient id="crownGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.9" />
+                      <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.95" />
+                      <stop offset="100%" stopColor="#d97706" stopOpacity="0.9" />
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  {/* Crown base */}
+                  <path
+                    d="M 25 75 L 30 45 L 45 55 L 60 35 L 75 55 L 90 45 L 95 75 Z"
+                    fill="url(#crownGradient)"
+                    filter="url(#glow)"
+                    stroke="#fbbf24"
+                    strokeWidth="2"
+                  />
+
+                  {/* Crown gems */}
+                  <circle cx="30" cy="45" r="4" fill="#22d3ee" opacity="0.9" />
+                  <circle cx="60" cy="35" r="5" fill="#06b6d4" opacity="0.9" />
+                  <circle cx="90" cy="45" r="4" fill="#22d3ee" opacity="0.9" />
+
+                  {/* Crown band */}
+                  <rect
+                    x="25"
+                    y="75"
+                    width="70"
+                    height="15"
+                    fill="url(#crownGradient)"
+                    filter="url(#glow)"
+                    stroke="#fbbf24"
+                    strokeWidth="2"
+                    rx="2"
+                  />
+
+                  {/* Decorative details */}
+                  <line x1="35" y1="80" x2="35" y2="85" stroke="#d97706" strokeWidth="1.5" />
+                  <line x1="50" y1="80" x2="50" y2="85" stroke="#d97706" strokeWidth="1.5" />
+                  <line x1="65" y1="80" x2="65" y2="85" stroke="#d97706" strokeWidth="1.5" />
+                  <line x1="80" y1="80" x2="80" y2="85" stroke="#d97706" strokeWidth="1.5" />
+                </svg>
+
+                <div className="mt-3 text-center">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                    Premium
+                  </div>
+                  <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
+                    Upgrade to unlock
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
