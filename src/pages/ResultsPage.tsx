@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Trash2, Eye, Search, Filter } from 'lucide-react';
+import { ArrowLeft, Trash2, Eye, Search, Filter, History } from 'lucide-react';
 import { getHistory, deleteAnalysis, AnalysisRow } from '../lib/history';
 import { FacialAnalysis } from '../types';
 import AnalysisResults from '../components/AnalysisResults';
