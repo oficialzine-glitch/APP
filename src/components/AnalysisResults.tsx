@@ -621,8 +621,8 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
         );
       })()}
 
-      {/* Face Shape — inline block (no new component) */}
-      {analysis?.faceShape && (() => {
+      {/* Face Shape — inline block (no new component) — PREMIUM ONLY */}
+      {isPremium && analysis?.faceShape && (() => {
         const shape = String(analysis.faceShape).toLowerCase();
         const facts = FACE_SHAPE_FACTS[shape] || [];
         const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
