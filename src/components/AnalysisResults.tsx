@@ -657,21 +657,42 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
                     stroke="none"
                   />
 
-                  {/* Three crown points on top */}
-                  <rect x="38" y="48" width="8" height="4" fill="#fbbf24" />
-                  <rect x="56" y="48" width="8" height="4" fill="#fbbf24" />
-                  <rect x="74" y="48" width="8" height="4" fill="#fbbf24" />
-                </svg>
+import { Crown } from "lucide-react";
 
-                <div className="mt-3 text-center">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
-                    Premium
-                  </div>
-                  <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
-                    Upgrade to unlock
-                  </div>
-                </div>
-              </div>
+// ...
+
+<div className="flex flex-col items-center">
+  {/* Crown wrapper so we can overlay the lucide icon */}
+  <div className="relative w-[120px] h-[120px] flex items-center justify-center">
+    {/* your existing SVG crown */}
+    <svg
+      viewBox="0 0 120 120"
+      className="w-[120px] h-[120px]"
+    >
+      {/* Three crown points on top */}
+      <rect x="38" y="48" width="8" height="4" fill="#fbbf24" />
+      <rect x="56" y="48" width="8" height="4" fill="#fbbf24" />
+      <rect x="74" y="48" width="8" height="4" fill="#fbbf24" />
+      {/* ...rest of your SVG if there was more above/below */}
+    </svg>
+
+    {/* lucide crown on top of the flat crown */}
+    <Crown
+      className="absolute w-10 h-10 text-yellow-400 drop-shadow-md"
+      strokeWidth={2.5}
+    />
+  </div>
+
+  <div className="mt-3 text-center">
+    <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-lg filter drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+      Premium
+    </div>
+    <div className="text-sm text-slate-300/80 mt-1 font-medium drop-shadow-md">
+      Upgrade to unlock
+    </div>
+  </div>
+</div>
+
             </div>
           )}
         </div>
