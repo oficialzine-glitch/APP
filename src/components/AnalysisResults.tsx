@@ -55,7 +55,7 @@ export default function AnalysisResults({ analysis, imageUrl, isPremium = false,
 
       {/* Profile Photo */}
       {imageUrl && (
-        <div className="text-center mb-8 animate-scale-in">
+        <div className="text-center mb-8 animate-scale-in -mt-20">
           <div className="relative inline-block">
             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 p-2 shadow-2xl shadow-cyan-500/60 relative">
               <img src={imageUrl} alt="Profile Analysis" className="w-full h-full rounded-full object-cover relative z-10" />
