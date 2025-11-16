@@ -45,7 +45,7 @@ export default function IntroductionPage({ onGetStarted, onSignIn }: Introductio
           <h1 className="text-3xl font-bold text-white mb-4 leading-tight">
             Take your face to the next level with{' '}
             <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-              NextFace AI
+              NextFace
             </span>
           </h1>
         </div>
