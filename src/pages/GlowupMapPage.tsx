@@ -38,6 +38,7 @@ type GlowupPlan = {
     daily: string[];
     weekly: string[];
   };
+  haircuts?: string[];
 };
 
 interface GlowupMapPageProps {
@@ -206,6 +207,7 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
         nextPlan = {
           weakPoints: data.weakPoints as WeakPoint[],
           maxPotential: (data.maxPotential ?? null) as MaxPotential,
+          haircuts: Array.isArray(data?.haircuts) ? data.haircuts : undefined,
         };
       }
 
@@ -706,6 +708,26 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
 
                       {/* Explanation Section */}
                       <p className="text-slate-300 text-lg mb-8 leading-relaxed">{cardData.explanation}</p>
+
+                      {/* Best Haircuts */}
+                      {plan?.haircuts && plan.haircuts.length > 0 && (
+                        <div className="mb-8">
+                          <h3 className="text-white font-bold text-xl mb-4">Best Haircuts for Your Face Shape</h3>
+                          <div className="grid grid-cols-3 gap-4">
+                            {plan.haircuts.map((haircut, index) => (
+                              <div
+                                key={index}
+                                className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-2xl p-6 text-center hover:border-cyan-500/60 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300"
+                              >
+                                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                                  {index + 1}
+                                </div>
+                                <p className="text-white font-semibold text-lg">{haircut}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Progress Bar */}
                       <div className="mb-8">
