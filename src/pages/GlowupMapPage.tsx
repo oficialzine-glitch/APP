@@ -227,9 +227,17 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
 
       // Wait for both the API call and minimum display time
       await minDisplayTime;
-      
+
       setPlan(nextPlan);
-      setActiveTab(nextPlan.weakPoints[0]?.key ?? "jawline");
+
+      // Set active tab: prioritize weak points, but use faceShape if only faceShapePlan exists
+      if (nextPlan.weakPoints && nextPlan.weakPoints.length > 0) {
+        setActiveTab(nextPlan.weakPoints[0].key);
+      } else if (nextPlan.faceShapePlan) {
+        setActiveTab("faceShape");
+      } else {
+        setActiveTab("jawline");
+      }
 
       // Reset task checks
       setTaskChecks({});
