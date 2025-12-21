@@ -647,14 +647,8 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
                       daily: plan.symmetryPlan.daily || [],
                       weekly: plan.symmetryPlan.weekly || []
                     };
-                  } else if (activeTab === "faceShape" && plan.faceShapePlan) {
-                    cardData = {
-                      title: plan.faceShapePlan.title || "Face Shape",
-                      explanation: plan.faceShapePlan.explanation,
-                      daily: plan.faceShapePlan.daily || [],
-                      weekly: plan.faceShapePlan.weekly || []
-                    };
                   } else {
+                    // For all other tabs including faceShape, look in weakPoints
                     const activeWeakPoint = plan.weakPoints?.find(wp => wp.key === activeTab);
                     if (activeWeakPoint) {
                      // Use weakPoint score if available, otherwise fallback to analysis scores
