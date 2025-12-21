@@ -207,6 +207,8 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
         nextPlan = {
           weakPoints: data.weakPoints as WeakPoint[],
           maxPotential: (data.maxPotential ?? null) as MaxPotential,
+          symmetryPlan: data.symmetryPlan || undefined,
+          faceShapePlan: data.faceShapePlan || undefined,
           haircuts: Array.isArray(data?.haircuts) ? data.haircuts : undefined,
         };
       }
@@ -647,8 +649,16 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
                       daily: plan.symmetryPlan.daily || [],
                       weekly: plan.symmetryPlan.weekly || []
                     };
+                  } else if (activeTab === "faceShape" && plan.faceShapePlan) {
+                    cardData = {
+                      title: plan.faceShapePlan.title || "Face Shape",
+                      score: plan.faceShapePlan.baseline,
+                      explanation: plan.faceShapePlan.explanation,
+                      daily: plan.faceShapePlan.daily || [],
+                      weekly: plan.faceShapePlan.weekly || []
+                    };
                   } else {
-                    // For all other tabs including faceShape, look in weakPoints
+                    // For all other tabs, look in weakPoints
                     const activeWeakPoint = plan.weakPoints?.find(wp => wp.key === activeTab);
                     if (activeWeakPoint) {
                      // Use weakPoint score if available, otherwise fallback to analysis scores
