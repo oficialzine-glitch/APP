@@ -204,14 +204,22 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
         // Old/alternate shape
         nextPlan = data.plan as GlowupPlan;
       } else if (data?.ok && Array.isArray(data?.weakPoints)) {
+        const haircuts = Array.isArray(data?.haircuts) ? data.haircuts :
+                        Array.isArray(data?.plan?.haircuts) ? data.plan.haircuts :
+                        undefined;
+
+        console.log("Parsed haircuts:", haircuts);
+
         nextPlan = {
           weakPoints: data.weakPoints as WeakPoint[],
           maxPotential: (data.maxPotential ?? null) as MaxPotential,
           symmetryPlan: data.symmetryPlan || undefined,
           faceShapePlan: data.faceShapePlan || undefined,
-          haircuts: Array.isArray(data?.haircuts) ? data.haircuts : undefined,
+          haircuts: haircuts,
         };
       }
+
+      console.log("Final plan with haircuts:", nextPlan?.haircuts);
 
       if (!nextPlan) throw new Error("Invalid plan response");
 
@@ -714,22 +722,29 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
                       <p className="text-slate-300 text-lg mb-8 leading-relaxed">{cardData.explanation}</p>
 
                       {/* Best Haircuts - Face Shape Only */}
-                      {activeTab === "faceShape" && plan?.haircuts && plan.haircuts.length > 0 && (
+                      {activeTab === "faceShape" && (
                         <div className="mb-8">
                           <h3 className="text-white font-bold text-xl mb-4">3 Best Haircut Fits</h3>
-                          <div className="grid grid-cols-3 gap-4">
-                            {plan.haircuts.map((haircut, index) => (
-                              <div
-                                key={index}
-                                className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-2xl p-6 text-center hover:border-cyan-500/60 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300"
-                              >
-                                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                                  {index + 1}
+                          {plan?.haircuts && plan.haircuts.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-4">
+                              {plan.haircuts.map((haircut, index) => (
+                                <div
+                                  key={index}
+                                  className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-2xl p-6 text-center hover:border-cyan-500/60 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300"
+                                >
+                                  <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                                    {index + 1}
+                                  </div>
+                                  <p className="text-white font-semibold text-lg">{haircut}</p>
                                 </div>
-                                <p className="text-white font-semibold text-lg">{haircut}</p>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="bg-slate-700/30 rounded-2xl p-6 text-center border border-slate-600/30">
+                              <p className="text-slate-400">Haircut recommendations will appear here</p>
+                              <p className="text-slate-500 text-sm mt-2">Debug: haircuts = {JSON.stringify(plan?.haircuts)}</p>
+                            </div>
+                          )}
                         </div>
                       )}
 
