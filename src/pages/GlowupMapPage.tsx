@@ -7,6 +7,17 @@ import { supabase } from '../lib/supabaseClient';
 // Local storage key for persisting glowup map state
 const GLOWUP_MAP_STORAGE_KEY = 'glowup_map_state';
 
+// Haircut recommendations by face shape
+const HAIRCUTS_BY_FACE_SHAPE: Record<string, string[]> = {
+  "oval": ["Textured crop", "Low taper fade with volume", "Medium-length layered cut"],
+  "square": ["Short quiff", "Classic side part", "Textured crop"],
+  "rectangle": ["Side-swept fringe", "Low fade with medium top", "Messy crop"],
+  "round": ["Mid fade with textured top", "Angular fringe crop", "Short pompadour"],
+  "diamond": ["Textured fringe with low taper", "Messy crop", "Medium-length flow"],
+  "triangle": ["Messy quiff", "Textured top with low fade", "Side-parted medium length"],
+  "heart": ["Side-swept fringe", "Low taper with layered top", "Medium-length textured cut"]
+};
+
 // Types
 type WeakPoint = {
   key: "jawline" | "cheekbones" | "skin" | "eyeArea" | "attractiveness" | "symmetry" | "faceShape";
@@ -224,6 +235,25 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
       console.log("Final plan with haircuts:", nextPlan?.haircuts);
 
       if (!nextPlan) throw new Error("Invalid plan response");
+
+      // If haircuts are missing or empty, use face shape to populate them
+      if ((!nextPlan.haircuts || nextPlan.haircuts.length === 0) && nextPlan.faceShapePlan?.title) {
+        const faceShapeTitle = nextPlan.faceShapePlan.title.toLowerCase();
+
+        // Extract face shape from title (e.g., "Oval Face" -> "oval")
+        let detectedShape: string | null = null;
+        for (const shape of Object.keys(HAIRCUTS_BY_FACE_SHAPE)) {
+          if (faceShapeTitle.includes(shape)) {
+            detectedShape = shape;
+            break;
+          }
+        }
+
+        if (detectedShape && HAIRCUTS_BY_FACE_SHAPE[detectedShape]) {
+          nextPlan.haircuts = HAIRCUTS_BY_FACE_SHAPE[detectedShape];
+          console.log(`Populated haircuts for ${detectedShape} face:`, nextPlan.haircuts);
+        }
+      }
 
       // Wait for both the API call and minimum display time
       await minDisplayTime;
