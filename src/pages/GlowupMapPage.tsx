@@ -203,15 +203,17 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
       if (data?.ok && data?.plan) {
         // Old/alternate shape
         nextPlan = data.plan as GlowupPlan;
-      } else if (data?.ok && Array.isArray(data?.weakPoints)) {
+      } else if (data?.ok) {
+        // New shape - check for various properties
         const haircuts = Array.isArray(data?.haircuts) ? data.haircuts :
                         Array.isArray(data?.plan?.haircuts) ? data.plan.haircuts :
                         undefined;
 
         console.log("Parsed haircuts:", haircuts);
+        console.log("Raw data.haircuts:", data?.haircuts);
 
         nextPlan = {
-          weakPoints: data.weakPoints as WeakPoint[],
+          weakPoints: (Array.isArray(data?.weakPoints) ? data.weakPoints : []) as WeakPoint[],
           maxPotential: (data.maxPotential ?? null) as MaxPotential,
           symmetryPlan: data.symmetryPlan || undefined,
           faceShapePlan: data.faceShapePlan || undefined,
