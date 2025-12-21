@@ -709,10 +709,10 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
                       {/* Explanation Section */}
                       <p className="text-slate-300 text-lg mb-8 leading-relaxed">{cardData.explanation}</p>
 
-                      {/* Best Haircuts */}
-                      {plan?.haircuts && plan.haircuts.length > 0 && (
+                      {/* Best Haircuts - Face Shape Only */}
+                      {activeTab === "faceShape" && plan?.haircuts && plan.haircuts.length > 0 && (
                         <div className="mb-8">
-                          <h3 className="text-white font-bold text-xl mb-4">Best Haircuts for Your Face Shape</h3>
+                          <h3 className="text-white font-bold text-xl mb-4">3 Best Haircut Fits</h3>
                           <div className="grid grid-cols-3 gap-4">
                             {plan.haircuts.map((haircut, index) => (
                               <div
