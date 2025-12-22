@@ -12,7 +12,7 @@
     - Images will be fetched at runtime using supabase.storage.from("user-images").getPublicUrl()
 */
 
--- Add avatar_path column to user_profiles
+-- Add avatar_path column to facial_profiles
 DO $$
 BEGIN
   IF NOT EXISTS (
