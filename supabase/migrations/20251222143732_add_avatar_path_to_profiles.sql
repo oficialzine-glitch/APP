@@ -19,6 +19,6 @@ BEGIN
     SELECT 1 FROM information_schema.columns
     WHERE table_name = 'facial_profiles' AND column_name = 'avatar_path'
   ) THEN
-    ALTER TABLE user_profiles ADD COLUMN avatar_path text;
+    ALTER TABLE facial_profiles ADD COLUMN avatar_path text;
   END IF;
 END $$;
