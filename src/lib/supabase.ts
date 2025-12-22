@@ -16,6 +16,6 @@ export const supabase = createClient(url, anon, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true, // 🔴 THIS MUST BE TRUE
   },
 });
