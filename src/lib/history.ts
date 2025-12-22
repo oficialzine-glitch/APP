@@ -66,7 +66,7 @@ export async function getHistory(opts: { userId: string; limit?: number }) {
 }
 
 export async function deleteAnalysis(id: string) {
-  const { error } = await supabase.from(TABLE).delete().eq("user_id", id);
+  const { error } = await supabase.from(TABLE).delete().eq("user_id", user_id);
   if (error) {
     console.error("deleteAnalysis error:", error);
     return { ok: false, error: error.message };
