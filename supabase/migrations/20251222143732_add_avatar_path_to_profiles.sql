@@ -1,5 +1,5 @@
 /*
-  # Add avatar_path to user_profiles
+  # Add avatar_path to facial_profiles
 
   ## Changes
     - Add `avatar_path` column to `facial_profiles` table
