@@ -21,7 +21,7 @@ export async function saveAnalysis(analysis: FacialAnalysis, imageUrl?: string):
     }
 
     const { data, error } = await supabase
-      .from('facial_profiles')
+      .from('facial_analyses')
       .insert({
         user_id: user.id,
         overall_score: analysis.overallScore,
@@ -53,7 +53,7 @@ export async function getUserAnalyses(): Promise<StoredAnalysis[]> {
     }
 
     const { data, error } = await supabase
-      .from('facial_profiles')
+      .from('facial_analyses')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
@@ -73,7 +73,7 @@ export async function getUserAnalyses(): Promise<StoredAnalysis[]> {
 export async function deleteAnalysis(analysisId: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('facial_profiles')
+      .from('facial_analyses')
       .delete()
       .eq('id', analysisId);
 
@@ -92,7 +92,7 @@ export async function deleteAnalysis(analysisId: string): Promise<boolean> {
 export async function getAnalysisById(analysisId: string): Promise<StoredAnalysis | null> {
   try {
     const { data, error } = await supabase
-      .from('facial_profiles')
+      .from('facial_analyses')
       .select('*')
       .eq('id', analysisId)
       .single();

@@ -1,11 +1,11 @@
 @@ .. @@
  /*
 -  # Create face analyses table for history
-+  # Create facial profiles table for history
++  # Create facial analyses table for history
 
    1. New Tables
 -    - `face_analyses`
-+    - `facial_profiles`
++    - `facial_analyses`
        - `id` (uuid, primary key)
        - `user_id` (uuid, foreign key to auth.users)
        - `created_at` (timestamp)
@@ -14,12 +14,12 @@
 
    2. Security
 -    - Enable RLS on `face_analyses` table
-+    - Enable RLS on `facial_profiles` table
++    - Enable RLS on `facial_analyses` table
      - Add policies for users to read/write/delete their own analyses
  */
 
 -CREATE TABLE IF NOT EXISTS face_analyses (
-+CREATE TABLE IF NOT EXISTS facial_profiles (
++CREATE TABLE IF NOT EXISTS facial_analyses (
    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
    user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
    created_at timestamptz DEFAULT now(),
@@ -28,25 +28,25 @@
  );
 
 -ALTER TABLE face_analyses ENABLE ROW LEVEL SECURITY;
-+ALTER TABLE facial_profiles ENABLE ROW LEVEL SECURITY;
++ALTER TABLE facial_analyses ENABLE ROW LEVEL SECURITY;
 
  CREATE POLICY "Users can read own analyses"
 -  ON face_analyses
-+  ON facial_profiles
++  ON facial_analyses
    FOR SELECT
    TO authenticated
    USING (auth.uid() = user_id);
 
  CREATE POLICY "Users can insert own analyses"
 -  ON face_analyses
-+  ON facial_profiles
++  ON facial_analyses
    FOR INSERT
    TO authenticated
    WITH CHECK (auth.uid() = user_id);
 
  CREATE POLICY "Users can delete own analyses"
 -  ON face_analyses
-+  ON facial_profiles
++  ON facial_analyses
    FOR DELETE
    TO authenticated
    USING (auth.uid() = user_id);
@@ -54,5 +54,5 @@
  -- Create index for better performance
 -CREATE INDEX IF NOT EXISTS face_analyses_user_id_idx ON face_analyses(user_id);
 -CREATE INDEX IF NOT EXISTS face_analyses_created_at_idx ON face_analyses(created_at DESC);
-+CREATE INDEX IF NOT EXISTS facial_profiles_user_id_idx ON facial_profiles(user_id);
-+CREATE INDEX IF NOT EXISTS facial_profiles_created_at_idx ON facial_profiles(created_at DESC);
++CREATE INDEX IF NOT EXISTS facial_analyses_user_id_idx ON facial_analyses(user_id);
++CREATE INDEX IF NOT EXISTS facial_analyses_created_at_idx ON facial_analyses(created_at DESC);

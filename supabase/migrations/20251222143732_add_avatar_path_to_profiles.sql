@@ -1,8 +1,8 @@
 /*
-  # Add avatar_path to facial_profiles
+  # Add avatar_path to facial_analyses
 
   ## Changes
-    - Add `avatar_path` column to `facial_profiles` table
+    - Add `avatar_path` column to `facial_analyses` table
       - Stores the Supabase Storage file path (not the full URL)
       - Format: user-uploads/{user.id}/{random-uuid}.jpg
       - Nullable to support users without avatars
@@ -12,13 +12,13 @@
     - Images will be fetched at runtime using supabase.storage.from("user-images").getPublicUrl()
 */
 
--- Add avatar_path column to facial_profiles
+-- Add avatar_path column to facial_analyses
 DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns
-    WHERE table_name = 'facial_profiles' AND column_name = 'avatar_path'
+    WHERE table_name = 'facial_analyses' AND column_name = 'avatar_path'
   ) THEN
-    ALTER TABLE facial_profiles ADD COLUMN avatar_path text;
+    ALTER TABLE facial_analyses ADD COLUMN avatar_path text;
   END IF;
 END $$;

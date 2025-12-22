@@ -1,7 +1,7 @@
 // src/lib/history.ts
 import { supabase } from "./supabaseClient";
 
-const TABLE = "facial_profiles";
+const TABLE = "facial_analyses";
 
 export type AnalysisRow = {
   id: string;
