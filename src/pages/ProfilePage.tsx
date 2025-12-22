@@ -55,9 +55,9 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
 
     try {
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('facial_analyses')
         .select('avatar_path')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) {
@@ -107,13 +107,13 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
 
       // Update database with the file path
       const { error: dbError } = await supabase
-        .from('user_profiles')
+        .from('facial_analyses')
         .upsert({
-          id: user.id,
+          user_id: user.id,
           avatar_path: filePath,
           updated_at: new Date().toISOString()
         }, {
-          onConflict: 'id'
+          onConflict: 'user_id'
         });
 
       if (dbError) {
