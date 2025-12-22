@@ -766,16 +766,16 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
                         <div className="mb-8">
                           <h3 className="text-white font-bold text-xl mb-4">3 Best Haircut Fits</h3>
                           {plan?.haircuts && plan.haircuts.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-4">
                               {plan.haircuts.map((haircut, index) => (
                                 <div
                                   key={index}
-                                  className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-2xl p-6 text-center hover:border-cyan-500/60 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300"
+                                  className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center hover:border-cyan-500/60 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300"
                                 >
-                                  <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                                  <div className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
                                     {index + 1}
                                   </div>
-                                  <p className="text-white font-semibold text-lg">{haircut}</p>
+                                  <p className="text-white font-semibold text-base sm:text-lg leading-tight">{haircut}</p>
                                 </div>
                               ))}
                             </div>
