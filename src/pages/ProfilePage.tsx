@@ -57,7 +57,7 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
       const { data, error } = await supabase
         .from('facial_profiles')
         .select('avatar_path')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) {
