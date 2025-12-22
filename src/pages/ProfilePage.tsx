@@ -9,6 +9,7 @@ import ContactModal from '../components/ContactModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import GradientButton from '../components/GradientButton';
+import { supabase } from '../lib/supabaseClient';
 
 interface ProfilePageProps {
   onBack: () => void;
@@ -27,6 +28,9 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
   const [bestScore, setBestScore] = useState<number | null>(null);
   const [percentile, setPercentile] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [avatarPath, setAvatarPath] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { user, signOut, isPremium } = useAuth();
 
@@ -45,7 +49,94 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
     return 1; // fallback
   };
 
-  // Load user statistics
+  // Fetch user avatar path from database and generate public URL
+  const loadAvatar = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('avatar_path')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading avatar:', error);
+        return;
+      }
+
+      if (data?.avatar_path) {
+        setAvatarPath(data.avatar_path);
+        const { data: urlData } = supabase.storage
+          .from('user-images')
+          .getPublicUrl(data.avatar_path);
+        setAvatarUrl(urlData.publicUrl);
+      }
+    } catch (error) {
+      console.error('Error loading avatar:', error);
+    }
+  };
+
+  // Handle avatar upload
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    try {
+      setUploadingAvatar(true);
+
+      // Generate a unique file path
+      const fileExt = file.name.split('.').pop() || 'jpg';
+      const randomUuid = crypto.randomUUID();
+      const filePath = `user-uploads/${user.id}/${randomUuid}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        alert('Failed to upload image. Please try again.');
+        return;
+      }
+
+      // Update database with the file path
+      const { error: dbError } = await supabase
+        .from('user_profiles')
+        .upsert({
+          id: user.id,
+          avatar_path: filePath,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
+
+      if (dbError) {
+        console.error('Database update error:', dbError);
+        alert('Failed to save avatar. Please try again.');
+        return;
+      }
+
+      // Update local state
+      setAvatarPath(filePath);
+      const { data: urlData } = supabase.storage
+        .from('user-images')
+        .getPublicUrl(filePath);
+      setAvatarUrl(urlData.publicUrl);
+
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('An unexpected error occurred. Please try again.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  // Load user statistics and avatar
   useEffect(() => {
     const loadUserStats = async () => {
       if (!user) {
@@ -54,11 +145,14 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
       }
 
       try {
+        // Load avatar
+        await loadAvatar();
+
         // Load analysis history to get count and best score
         const { ok, data } = await getHistory({ userId: user.id, limit: 100 });
         if (ok && data) {
           setAnalysisCount(data.length);
-          
+
           // Find the best overall score
           if (data.length > 0) {
             const scores = data.map(analysis => analysis.analysis?.overall || 0);
@@ -121,8 +215,38 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
         {/* User Profile Card */}
         <div className="bg-slate-800/60 backdrop-blur-sm rounded-3xl p-6 border border-slate-700/50 mb-6 animate-fade-in">
           <div className="flex items-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mr-4">
-              <User className="w-10 h-10 text-white" />
+            <div className="relative mr-4">
+              <div className="w-20 h-20 rounded-full overflow-hidden">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="User avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <User className="w-10 h-10 text-white" />
+                  </div>
+                )}
+              </div>
+              <label
+                htmlFor="avatar-upload"
+                className={`absolute bottom-0 right-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors duration-200 border-2 border-slate-800 ${uploadingAvatar ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {uploadingAvatar ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera className="w-4 h-4 text-white" />
+                )}
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={uploadingAvatar}
+                className="hidden"
+              />
             </div>
             <div className="flex-1">
                 <h2 className="text-2xl font-bold text-white mb-1">
