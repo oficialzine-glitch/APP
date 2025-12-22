@@ -109,9 +109,8 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
       const { error: dbError } = await supabase
         .from('facial_profiles')
         .upsert({
-          id: user.id,
-          avatar_path: filePath,
-          updated_at: new Date().toISOString()
+          user_id: user.id,
+          avatar_path: filePath
         }, {
           onConflict: 'user_id'
         });
