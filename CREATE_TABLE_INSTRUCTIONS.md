@@ -1,6 +1,6 @@
-# Fix Missing facial_analyses Table
+# Fix Missing facial_profiles Table
 
-The `facial_analyses` table doesn't exist in your Supabase database. You need to create it manually.
+The `facial_profiles` table doesn't exist in your Supabase database. You need to create it manually.
 
 ## Steps to Fix:
 
@@ -15,10 +15,10 @@ The `facial_analyses` table doesn't exist in your Supabase database. You need to
 3. **Copy and Execute this SQL**
    ```sql
    /*
-     # Create facial analyses table
+     # Create facial profiles table
 
      1. New Tables
-       - `facial_analyses`
+       - `facial_profiles`
          - `id` (uuid, primary key)
          - `user_id` (uuid, foreign key to auth.users)
          - `overall_score` (decimal)
@@ -29,11 +29,11 @@ The `facial_analyses` table doesn't exist in your Supabase database. You need to
          - `updated_at` (timestamp)
 
      2. Security
-       - Enable RLS on `facial_analyses` table
+       - Enable RLS on `facial_profiles` table
        - Add policy for users to read/write their own analyses
    */
 
-   CREATE TABLE IF NOT EXISTS facial_analyses (
+   CREATE TABLE IF NOT EXISTS facial_profiles (
      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
      user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
      overall_score decimal(3,1) NOT NULL,
@@ -44,36 +44,36 @@ The `facial_analyses` table doesn't exist in your Supabase database. You need to
      updated_at timestamptz DEFAULT now()
    );
 
-   ALTER TABLE facial_analyses ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE facial_profiles ENABLE ROW LEVEL SECURITY;
 
    CREATE POLICY "Users can read own analyses"
-     ON facial_analyses
+     ON facial_profiles
      FOR SELECT
      TO authenticated
      USING (auth.uid() = user_id);
 
    CREATE POLICY "Users can insert own analyses"
-     ON facial_analyses
+     ON facial_profiles
      FOR INSERT
      TO authenticated
      WITH CHECK (auth.uid() = user_id);
 
    CREATE POLICY "Users can update own analyses"
-     ON facial_analyses
+     ON facial_profiles
      FOR UPDATE
      TO authenticated
      USING (auth.uid() = user_id)
      WITH CHECK (auth.uid() = user_id);
 
    CREATE POLICY "Users can delete own analyses"
-     ON facial_analyses
+     ON facial_profiles
      FOR DELETE
      TO authenticated
      USING (auth.uid() = user_id);
 
    -- Create index for better performance
-   CREATE INDEX IF NOT EXISTS facial_analyses_user_id_idx ON facial_analyses(user_id);
-   CREATE INDEX IF NOT EXISTS facial_analyses_created_at_idx ON facial_analyses(created_at DESC);
+   CREATE INDEX IF NOT EXISTS facial_profiles_user_id_idx ON facial_profiles(user_id);
+   CREATE INDEX IF NOT EXISTS facial_profiles_created_at_idx ON facial_profiles(created_at DESC);
    ```
 
 4. **Run the Query**
@@ -84,7 +84,7 @@ The `facial_analyses` table doesn't exist in your Supabase database. You need to
    - The errors should be resolved and the Results page should work
 
 ## What this creates:
-- The `facial_analyses` table with all required columns
+- The `facial_profiles` table with all required columns
 - Row Level Security policies so users only see their own data
 - Indexes for better performance
 - Proper foreign key relationships
