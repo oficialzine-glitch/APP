@@ -90,12 +90,13 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
       const randomUuid = crypto.randomUUID();
       const filePath = `user-uploads/${user.id}/${randomUuid}.${fileExt}`;
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (passing the File object directly)
       const { error: uploadError } = await supabase.storage
         .from('user-images')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: file.type
         });
 
       if (uploadError) {
