@@ -107,7 +107,7 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
 
       // Update database with the file path
       const { error: dbError } = await supabase
-        .from('user_profiles')
+        .from('facial_profiles')
         .upsert({
           id: user.id,
           avatar_path: filePath,
