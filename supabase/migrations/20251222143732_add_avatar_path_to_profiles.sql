@@ -2,7 +2,7 @@
   # Add avatar_path to user_profiles
 
   ## Changes
-    - Add `avatar_path` column to `user_profiles` table
+    - Add `avatar_path` column to `facial_profiles` table
       - Stores the Supabase Storage file path (not the full URL)
       - Format: user-uploads/{user.id}/{random-uuid}.jpg
       - Nullable to support users without avatars
