@@ -113,7 +113,7 @@ export default function ProfilePage({ onBack, onNavigate }: ProfilePageProps) {
           avatar_path: filePath,
           updated_at: new Date().toISOString()
         }, {
-          onConflict: 'id'
+          onConflict: 'user_id'
         });
 
       if (dbError) {
