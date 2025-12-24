@@ -11,6 +11,7 @@ import { useImageProcessing } from '../hooks/useImageProcessing';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { saveAnalysis, getAnalysisCount } from '../lib/history';
+import { supabase } from '../lib/supabaseClient';
 
 interface AnalysisPageProps {
   onBack: () => void;
@@ -42,17 +43,47 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
   };
 
   const performAnalysis = async (file: File) => {
-    const url = URL.createObjectURL(file);
-    setSelectedImage(url);
+    const blobUrl = URL.createObjectURL(file);
+    setSelectedImage(blobUrl);
 
     try {
+      let storageUrl: string | null = null;
+
+      // Upload image to Supabase Storage if user is authenticated
+      if (user) {
+        try {
+          const fileExt = file.name.split('.').pop() || 'jpg';
+          const randomUuid = crypto.randomUUID();
+          const filePath = `user-uploads/${user.id}/${randomUuid}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('user-images')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: file.type
+            });
+
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage
+              .from('user-images')
+              .getPublicUrl(filePath);
+            storageUrl = urlData.publicUrl;
+          } else {
+            console.error('Failed to upload image to storage:', uploadError);
+          }
+        } catch (error) {
+          console.error('Error uploading image to storage:', error);
+        }
+      }
+
       const result = await analyzeImage(file);
 
       if (result && user) {
         try {
           const saveResult = await saveAnalysis({
             userId: user.id,
-            imageUrl: url,
+            imageUrl: storageUrl,
             analysis: result
           });
           if (saveResult.ok) {
