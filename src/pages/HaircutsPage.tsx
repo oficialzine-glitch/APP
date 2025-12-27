@@ -11,9 +11,9 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
         {/* Hero Image */}
         <div className="mb-8 pt-4 animate-fade-in">
           <div className="relative inline-block w-full">
-            <div className="rounded-3xl overflow-hidden border-2 border-cyan-400/30 shadow-lg shadow-cyan-500/20">
+            <div className="rounded-xl overflow-hidden border-2 border-cyan-400/30 shadow-lg shadow-cyan-500/20">
               <img
-                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Oval%20Face%20(2).png"
+                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Oval%20Face%20(3).png"
                 alt="Haircut Guide"
                 className="w-full h-auto"
               />
