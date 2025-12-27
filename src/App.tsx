@@ -168,62 +168,62 @@ function App() {
       {/* Static Bottom Navigation - Only show on main pages, not on special pages */}
       {!['upload', 'previous-analyses'].includes(currentPage) && (
         <div className="fixed bottom-0 left-0 right-0 p-2 bg-black/20 backdrop-blur-sm">
-          <div className="max-w-md mx-auto">
+          <div className="max-w-md mx-auto px-2">
             <div className="flex justify-center">
-              <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-0.5 border border-slate-700/50 flex items-center">
+              <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-0.5 border border-slate-700/50 flex items-center gap-0.5">
                 <button
                   onClick={() => handlePageChange('analysis')}
-                  className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-300 flex flex-col items-center min-w-[60px] ${
+                  className={`px-1.5 py-2 rounded-lg text-[10px] font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'analysis' || currentPage === 'home'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <Scan className="w-4 h-4 mb-0.5" />
+                  <Scan className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap">{t.analysis}</span>
                 </button>
                 <button
                   onClick={() => handlePageChange('glowup-map')}
-                  className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-300 flex flex-col items-center min-w-[60px] ${
+                  className={`px-1.5 py-2 rounded-lg text-[10px] font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'glowup-map'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <Sparkles className="w-4 h-4 mb-0.5" />
+                  <Sparkles className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap">Glowup</span>
                 </button>
                 <button
                   onClick={() => handlePageChange('haircuts')}
-                  className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-300 flex flex-col items-center min-w-[60px] ${
+                  className={`px-1.5 py-2 rounded-lg text-[10px] font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'haircuts'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <Scissors className="w-4 h-4 mb-0.5" />
+                  <Scissors className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap">{t.haircuts}</span>
                 </button>
                 <button
                   onClick={() => handlePageChange('results')}
-                  className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-300 flex flex-col items-center min-w-[60px] ${
+                  className={`px-1.5 py-2 rounded-lg text-[10px] font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'results'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <History className="w-4 h-4 mb-0.5" />
+                  <History className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap">{t.results}</span>
                 </button>
                 <button
                   onClick={() => handlePageChange('profile')}
-                  className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-300 flex flex-col items-center min-w-[60px] ${
+                  className={`px-1.5 py-2 rounded-lg text-[10px] font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'profile'
                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <User className="w-4 h-4 mb-0.5" />
+                  <User className="w-3.5 h-3.5" />
                   <span className="whitespace-nowrap">{t.profile}</span>
                 </button>
               </div>
