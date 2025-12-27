@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Scan, History, User, Crown, Sparkles, BarChart3 } from 'lucide-react';
+import { Scan, History, User, Crown, Sparkles, BarChart3, Scissors } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
 import ProfilePage from './pages/ProfilePage';
@@ -10,13 +10,15 @@ import AnalysisViewPage from './pages/AnalysisViewPage';
 import PreviousAnalysesPage from './pages/PreviousAnalysesPage';
 import GlowupMapPage from './pages/GlowupMapPage';
 import OnboardingPage from './pages/OnboardingPage';
+import HaircutsPage from './pages/HaircutsPage';
 import PremiumModal from './components/PremiumModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import CreatorCodeModal from './components/CreatorCodeModal';
 import { FacialAnalysis } from './types';
 import { useAuth } from './contexts/AuthContext';
+import { useLanguage } from './contexts/LanguageContext';
 
-type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results' | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map';
+type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results' | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'haircuts';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('intro');
@@ -27,6 +29,7 @@ function App() {
   const [logoTapCount, setLogoTapCount] = useState(0);
   const [logoTapTimer, setLogoTapTimer] = useState<NodeJS.Timeout | null>(null);
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
 
   // Redirect authenticated users from intro/onboarding/auth pages to analysis
   React.useEffect(() => {
@@ -118,6 +121,8 @@ function App() {
         return <PreviousAnalysesPage onBack={() => setCurrentPage('analysis')} />;
       case 'glowup-map':
         return <GlowupMapPage onBack={() => setCurrentPage('home')} />;
+      case 'haircuts':
+        return <HaircutsPage onBack={() => setCurrentPage('home')} />;
       default:
         return <HomePage onNavigate={setCurrentPage} />;
     }
@@ -128,7 +133,7 @@ function App() {
       {/* Page Content with Transition */}
       <div className={`transition-opacity duration-150 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
       {/* Top Navigation Bar */}
-      {!['glowup-map', 'upload'].includes(currentPage) && (
+      {!['glowup-map', 'upload', 'haircuts'].includes(currentPage) && (
         <div className="flex justify-between items-center mb-4 pt-4 px-4">
           {/* App Name - Top Left */}
           <div>
@@ -175,7 +180,7 @@ function App() {
                   }`}
                 >
                   <Scan className="w-4 h-4 inline mr-1" />
-                  Analysis
+                  {t.analysis}
                 </button>
                 <button
                   onClick={() => handlePageChange('glowup-map')}
@@ -189,6 +194,17 @@ function App() {
                   Glowup
                 </button>
                 <button
+                  onClick={() => handlePageChange('haircuts')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
+                    currentPage === 'haircuts'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Scissors className="w-4 h-4 inline mr-1" />
+                  {t.haircuts}
+                </button>
+                <button
                   onClick={() => handlePageChange('results')}
                   className={`px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                     currentPage === 'results'
@@ -197,7 +213,7 @@ function App() {
                   }`}
                 >
                   <History className="w-4 h-4 inline mr-1" />
-                  Results
+                  {t.results}
                 </button>
                 <button
                   onClick={() => handlePageChange('profile')}
@@ -208,7 +224,7 @@ function App() {
                   }`}
                 >
                   <User className="w-4 h-4 inline mr-1" />
-                  Profile
+                  {t.profile}
                 </button>
               </div>
             </div>

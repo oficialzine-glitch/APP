@@ -7,6 +7,7 @@ interface Translations {
   analysis: string;
   results: string;
   profile: string;
+  haircuts: string;
   
   // Home Page
   startAIAnalysis: string;
@@ -130,6 +131,7 @@ const translations: Record<Language, Translations> = {
     analysis: 'Analysis',
     results: 'Results',
     profile: 'Profile',
+    haircuts: 'Haircuts',
     
     // Home Page
     startAIAnalysis: 'Start AI Analysis',
@@ -251,6 +253,7 @@ const translations: Record<Language, Translations> = {
     analysis: 'Análisis',
     results: 'Resultados',
     profile: 'Perfil',
+    haircuts: 'Pelo',
     
     // Home Page
     startAIAnalysis: 'Iniciar Análisis IA',
