@@ -133,7 +133,7 @@ function App() {
       {/* Page Content with Transition */}
       <div className={`transition-opacity duration-150 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
       {/* Top Navigation Bar */}
-      {!['glowup-map', 'upload'].includes(currentPage) && (
+      {!['upload'].includes(currentPage) && (
         <div className="flex justify-between items-center mb-4 pt-4 px-4">
           {/* App Name - Top Left */}
           <div>

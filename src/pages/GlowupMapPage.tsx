@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, User, RefreshCw, Sparkles } from 'lucide-react';
+import { User, RefreshCw, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getHistory, AnalysisRow } from '../lib/history';
 import { supabase } from '../lib/supabaseClient';
@@ -405,19 +405,11 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center mb-8 pt-4 animate-fade-in">
-          <button
-            onClick={onBack}
-            className="p-3 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/30 hover:bg-slate-700/60 transition-all duration-300 mr-4 group"
-          >
-            <ArrowLeft className="w-5 h-5 text-white group-hover:text-blue-400 transition-colors duration-300" />
-          </button>
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
-              Glowup Map
-            </h1>
-            <p className="text-slate-300">Pick an analysis to generate your Glowup Map</p>
-          </div>
+        <div className="mb-8 pt-4 animate-fade-in">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
+            Glowup Map
+          </h1>
+          <p className="text-slate-300">Pick an analysis to generate your Glowup Map</p>
         </div>
 
         {/* Error Banner */}
