@@ -13,7 +13,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
           <div className="relative inline-block w-full">
             <div className="rounded-xl overflow-hidden border-2 border-cyan-400/30 shadow-lg shadow-cyan-500/20">
               <img
-                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Oval%20Face%20(3).png"
+                src="https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Oval%20Face%20(4).png"
                 alt="Haircut Guide"
                 className="w-full h-auto"
               />
