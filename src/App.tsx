@@ -172,17 +172,6 @@ function App() {
             <div className="flex justify-center">
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-0.5 border border-slate-700/50 flex items-center gap-0.5">
                 <button
-                  onClick={() => handlePageChange('analysis')}
-                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
-                    currentPage === 'analysis' || currentPage === 'home'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  <Scan className="w-4 h-4" />
-                  <span className="whitespace-nowrap">{t.analysis}</span>
-                </button>
-                <button
                   onClick={() => handlePageChange('glowup-map')}
                   className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'glowup-map'
@@ -203,6 +192,16 @@ function App() {
                 >
                   <Scissors className="w-4 h-4" />
                   <span className="whitespace-nowrap">{t.haircuts}</span>
+                </button>
+                <button
+                  onClick={() => handlePageChange('analysis')}
+                  className={`p-3 rounded-full transition-all duration-300 flex items-center justify-center -mt-6 ${
+                    currentPage === 'analysis' || currentPage === 'home'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50 scale-110'
+                      : 'bg-slate-700 text-slate-300 hover:text-white hover:bg-slate-600'
+                  }`}
+                >
+                  <Scan className="w-6 h-6" />
                 </button>
                 <button
                   onClick={() => handlePageChange('results')}
