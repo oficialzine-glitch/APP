@@ -404,13 +404,15 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 pt-4 animate-fade-in">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
-            Glowup Map
-          </h1>
-          <p className="text-slate-300">Pick an analysis to generate your Glowup Map</p>
-        </div>
+        {/* Header - Only show when no plan is generated */}
+        {!plan && (
+          <div className="mb-8 pt-4 animate-fade-in">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
+              Glowup Map
+            </h1>
+            <p className="text-slate-300">Pick an analysis to generate your Glowup Map</p>
+          </div>
+        )}
 
         {/* Error Banner */}
         {errorMsg && (
@@ -580,7 +582,7 @@ export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
           </div>
         ) : (
           /* Step 2: Generated Plan */
-          <div className={`animate-fade-in ${generating ? 'hidden' : ''}`}>
+          <div className={`pt-4 animate-fade-in ${generating ? 'hidden' : ''}`}>
             {/* Avatar */}
             <div className="text-center mb-8 animate-scale-in">
               <div className="relative inline-block">
