@@ -61,18 +61,14 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="pt-4 pb-6">
-          <h1 className="text-3xl font-bold text-white">Hairstyle Gallery</h1>
-          <p className="text-slate-400 mt-2">Explore and try on different hairstyle categories</p>
-        </div>
-
         {/* Hairstyle Categories */}
         <div className="space-y-10">
-          {hairstyleCategories.map((category) => (
+          {hairstyleCategories.map((category, index) => (
             <div key={category.id} className="animate-fade-in">
-              {/* Category Header */}
-              <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 mb-6 relative overflow-hidden`}>
+              {index === 0 ? (
+                <div className="flex gap-6 items-start">
+                  {/* Category Header */}
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden flex-1 h-fit`}>
 
                 {category.badge && (
                   <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -80,36 +76,80 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
                 )}
 
-                <div className="relative z-10">
-                  <h2 className="text-3xl font-bold text-white">{category.title}</h2>
-                  <p className="text-white/70 mt-2">{category.subtitle}</p>
-                </div>
-              </div>
-
-              {/* Hairstyle Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                {category.hairstyles.map((hairstyle) => (
-                  <div
-                    key={hairstyle.id}
-                    className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
-                  >
-                    <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
-                      <img
-                        src={hairstyle.image}
-                        alt={hairstyle.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative z-10">
+                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
+                      <p className="text-white/70 mt-2">{category.subtitle}</p>
                     </div>
+                  </div>
 
-                    {hairstyle.title && (
-                      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
-                        <p className="text-white text-sm font-medium">{hairstyle.title}</p>
+                  {/* Hairstyle Grid for first category */}
+                  <div className="flex flex-col gap-4 flex-1">
+                    {category.hairstyles.map((hairstyle) => (
+                      <div
+                        key={hairstyle.id}
+                        className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
+                      >
+                        <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
+                          <img
+                            src={hairstyle.image}
+                            alt={hairstyle.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+
+                        {hairstyle.title && (
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
+                            <p className="text-white text-sm font-medium">{hairstyle.title}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Category Header for other categories */}
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 mb-6 relative overflow-hidden`}>
+
+                    {category.badge && (
+                      <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                        <span className="text-white font-bold text-sm uppercase">{category.badge}</span>
                       </div>
                     )}
+
+                    <div className="relative z-10">
+                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
+                      <p className="text-white/70 mt-2">{category.subtitle}</p>
+                    </div>
                   </div>
-                ))}
-              </div>
+
+                  {/* Hairstyle Grid for other categories */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    {category.hairstyles.map((hairstyle) => (
+                      <div
+                        key={hairstyle.id}
+                        className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
+                      >
+                        <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
+                          <img
+                            src={hairstyle.image}
+                            alt={hairstyle.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+
+                        {hairstyle.title && (
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
+                            <p className="text-white text-sm font-medium">{hairstyle.title}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
