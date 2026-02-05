@@ -22,8 +22,7 @@ interface HairstyleCategory {
 const hairstyleCategories: HairstyleCategory[] = [
   {
     id: 'color',
-    title: 'Classic hairstyles
-     ',
+    title: 'Colored Highlights',
     subtitle: '2,340 Used by people',
     badge: 'NEW',
     gradient: 'from-cyan-500 via-blue-500 to-blue-600',
