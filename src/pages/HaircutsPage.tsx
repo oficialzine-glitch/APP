@@ -66,9 +66,9 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
           {hairstyleCategories.map((category, index) => (
             <div key={category.id} className="animate-fade-in">
               {index === 0 ? (
-                <div className="flex gap-6 items-start">
+                <div className="flex flex-col gap-6">
                   {/* Category Header */}
-                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden flex-1 h-fit`}>
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
 
                 {category.badge && (
                   <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -83,7 +83,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
 
                   {/* Hairstyle Grid for first category */}
-                  <div className="flex flex-col gap-4 flex-1">
+                  <div className="grid grid-cols-2 gap-4">
                     {category.hairstyles.map((hairstyle) => (
                       <div
                         key={hairstyle.id}
