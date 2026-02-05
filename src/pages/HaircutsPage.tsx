@@ -27,10 +27,8 @@ const hairstyleCategories: HairstyleCategory[] = [
     badge: 'NEW',
     gradient: 'from-cyan-500 via-blue-500 to-blue-600',
     hairstyles: [
-      { id: '1', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Ombre Blonde' },
-      { id: '2', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Rose Gold' },
-      { id: '3', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Deep Brunette' },
-      { id: '4', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Copper Red' },
+      { id: '1', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Ombre+Blonde', title: 'Ombre Blonde' },
+      { id: '2', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Rose+Gold', title: 'Rose Gold' },
     ]
   },
   {
@@ -39,10 +37,10 @@ const hairstyleCategories: HairstyleCategory[] = [
     subtitle: '3,156 Used by people',
     gradient: 'from-slate-600 via-slate-700 to-slate-800',
     hairstyles: [
-      { id: '1', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Loose Curls' },
-      { id: '2', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Tight Curls' },
-      { id: '3', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Beach Waves' },
-      { id: '4', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Soft Waves' },
+      { id: '1', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Loose+Curls', title: 'Loose Curls' },
+      { id: '2', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Tight+Curls', title: 'Tight Curls' },
+      { id: '3', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Beach+Waves', title: 'Beach Waves' },
+      { id: '4', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Soft+Waves', title: 'Soft Waves' },
     ]
   },
   {
@@ -51,10 +49,10 @@ const hairstyleCategories: HairstyleCategory[] = [
     subtitle: '1,892 Used by people',
     gradient: 'from-teal-500 via-cyan-500 to-blue-500',
     hairstyles: [
-      { id: '1', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Pixie Cut' },
-      { id: '2', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Bob Cut' },
-      { id: '3', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Shag' },
-      { id: '4', image: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400', title: 'Crop' },
+      { id: '1', image: 'https://via.placeholder.com/400x400/14b8a6/ffffff?text=Pixie+Cut', title: 'Pixie Cut' },
+      { id: '2', image: 'https://via.placeholder.com/400x400/06b6d4/ffffff?text=Bob+Cut', title: 'Bob Cut' },
+      { id: '3', image: 'https://via.placeholder.com/400x400/0ea5e9/ffffff?text=Shag', title: 'Shag' },
+      { id: '4', image: 'https://via.placeholder.com/400x400/3b82f6/ffffff?text=Crop', title: 'Crop' },
     ]
   },
 ];
@@ -89,7 +87,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
               </div>
 
               {/* Hairstyle Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 {category.hairstyles.map((hairstyle) => (
                   <div
                     key={hairstyle.id}
