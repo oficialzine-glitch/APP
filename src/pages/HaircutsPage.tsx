@@ -107,70 +107,9 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                     ))}
                   </div>
                 </div>
-              ) : (
-                <>
-                  {/* Category Header for other categories */}
-                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 mb-6 relative overflow-hidden`}>
-
-                    {category.badge && (
-                      <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <span className="text-white font-bold text-sm uppercase">{category.badge}</span>
-                      </div>
-                    )}
-
-                    <div className="relative z-10">
-                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
-                      <p className="text-white/70 mt-2">{category.subtitle}</p>
-                    </div>
-                  </div>
-
-                  {/* Hairstyle Grid for other categories */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    {category.hairstyles.map((hairstyle) => (
-                      <div
-                        key={hairstyle.id}
-                        className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
-                      >
-                        <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
-                          <img
-                            src={hairstyle.image}
-                            alt={hairstyle.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-
-                        {hairstyle.title && (
-                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
-                            <p className="text-white text-sm font-medium">{hairstyle.title}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+              ) : null}
             </div>
           ))}
-        </div>
-
-        {/* CTA Button */}
-        <div className="text-center py-8">
-          <div className="relative inline-block overflow-visible isolate">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-2 rounded-3xl bg-gradient-to-r from-cyan-400/35 via-blue-500/28 to-blue-600/28 blur-2xl -z-10"
-            />
-            <button
-              className="relative px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 ring-1 ring-inset ring-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 overflow-visible"
-            >
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 rounded-2xl [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)] opacity-70"
-              />
-              <span className="relative z-10">Try on haircuts</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
