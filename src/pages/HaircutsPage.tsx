@@ -69,15 +69,15 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
             <div key={category.id} className="animate-fade-in">
               {index === 0 ? (
                 <div className="flex flex-col gap-8">
-                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-6 relative overflow-hidden`}>
                     {category.badge && (
-                      <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <span className="text-white font-bold text-sm uppercase">{category.badge}</span>
+                      <div className="absolute top-3 left-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                        <span className="text-white font-bold text-xs uppercase">{category.badge}</span>
                       </div>
                     )}
-                    <div className="relative z-10 pt-8">
-                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
-                      <p className="text-white/70 mt-2">{category.subtitle}</p>
+                    <div className="relative z-10 pt-6">
+                      <h2 className="text-2xl font-bold text-white">{category.title}</h2>
+                      <p className="text-white/70 mt-1 text-sm">{category.subtitle}</p>
                     </div>
                   </div>
 
@@ -112,10 +112,10 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                 </div>
               ) : index === 1 ? (
                 <div className="flex flex-col gap-8">
-                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-6 relative overflow-hidden`}>
                     <div className="relative z-10">
-                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
-                      <p className="text-white/70 mt-2">{category.subtitle}</p>
+                      <h2 className="text-2xl font-bold text-white">{category.title}</h2>
+                      <p className="text-white/70 mt-1 text-sm">{category.subtitle}</p>
                     </div>
                   </div>
 
