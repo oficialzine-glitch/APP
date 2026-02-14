@@ -28,7 +28,7 @@ const hairstyleCategories: HairstyleCategory[] = [
     badge: 'NEW',
     gradient: 'from-cyan-500 via-blue-500 to-blue-600',
     hairstyles: [
-      { id: '1', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Ombre+Blonde', title: 'Ombre Blonde' },
+      { id: '1', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Ombre+Blonde', title: 'Side Part' },
       { id: '2', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Rose+Gold', title: 'Rose Gold' },
       { id: '3', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Platinum+Blonde', title: 'Platinum Blonde' },
       { id: '4', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Cherry+Red', title: 'Cherry Red' },
