@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronLeft } from 'lucide-react';
 
 interface HaircutsPageProps {
   onBack: () => void;
@@ -83,12 +84,16 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
 
                   {/* Hairstyle Grid for first category */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {category.hairstyles.map((hairstyle) => (
-                      <div
-                        key={hairstyle.id}
-                        className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
-                      >
+                  <div className="relative">
+                    <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                      <ChevronLeft className="w-6 h-6 text-white" />
+                    </button>
+                    <div className="grid grid-cols-2 gap-4">
+                      {category.hairstyles.map((hairstyle) => (
+                        <div
+                          key={hairstyle.id}
+                          className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
+                        >
                         <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
                           <img
                             src={hairstyle.image}
@@ -103,8 +108,49 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                             <p className="text-white text-sm font-medium">{hairstyle.title}</p>
                           </div>
                         )}
-                      </div>
-                    ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : index === 1 ? (
+                <div className="flex flex-col gap-6">
+                  {/* Category Header */}
+                  <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
+                    <div className="relative z-10">
+                      <h2 className="text-3xl font-bold text-white">{category.title}</h2>
+                      <p className="text-white/70 mt-2">{category.subtitle}</p>
+                    </div>
+                  </div>
+
+                  {/* Hairstyle Grid for second category */}
+                  <div className="relative">
+                    <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                      <ChevronLeft className="w-6 h-6 text-white" />
+                    </button>
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                      {category.hairstyles.map((hairstyle) => (
+                        <div
+                          key={hairstyle.id}
+                          className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-slate-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-slate-500/20 transform hover:scale-105"
+                        >
+                          <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
+                            <img
+                              src={hairstyle.image}
+                              alt={hairstyle.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </div>
+
+                          {hairstyle.title && (
+                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
+                              <p className="text-white text-sm font-medium">{hairstyle.title}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : null}
