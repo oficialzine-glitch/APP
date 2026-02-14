@@ -75,7 +75,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                         <span className="text-white font-bold text-sm uppercase">{category.badge}</span>
                       </div>
                     )}
-                    <div className="relative z-10">
+                    <div className="relative z-10 pt-8">
                       <h2 className="text-3xl font-bold text-white">{category.title}</h2>
                       <p className="text-white/70 mt-2">{category.subtitle}</p>
                     </div>
