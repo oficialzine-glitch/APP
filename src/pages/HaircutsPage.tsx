@@ -42,8 +42,8 @@ const hairstyleCategories: HairstyleCategory[] = [
     subtitle: '3,156 Used by people',
     gradient: 'from-slate-600 via-slate-700 to-slate-800',
     hairstyles: [
-      { id: '1', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Loose+Curls', title: 'Loose Curls' },
-      { id: '2', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Tight+Curls', title: 'Tight Curls' },
+      { id: '1', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Loose+Curls', title: 'Bleached buzz' },
+      { id: '2', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Tight+Curls', title: 'Messy Hair' },
     ]
   },
   {
