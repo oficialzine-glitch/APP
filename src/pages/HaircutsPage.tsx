@@ -38,7 +38,7 @@ const hairstyleCategories: HairstyleCategory[] = [
   },
   {
     id: 'wavy',
-    title: 'Wavy & Curly',
+    title: 'Popular Styles',
     subtitle: '3,156 Used by people',
     gradient: 'from-slate-600 via-slate-700 to-slate-800',
     hairstyles: [
