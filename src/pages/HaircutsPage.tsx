@@ -84,16 +84,17 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
 
                   {/* Hairstyle Grid for first category */}
-                  <div className="relative">
-                    <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                      <ChevronLeft className="w-6 h-6 text-white" />
-                    </button>
-                    <div className="grid grid-cols-2 gap-4">
-                      {category.hairstyles.map((hairstyle) => (
-                        <div
-                          key={hairstyle.id}
-                          className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
-                        >
+                  <div className="grid grid-cols-2 gap-4">
+                    {category.hairstyles.map((hairstyle, idx) => (
+                      <div
+                        key={hairstyle.id}
+                        className="group cursor-pointer relative rounded-2xl overflow-visible border border-slate-700/30 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20 transform hover:scale-105"
+                      >
+                        {idx === 0 && (
+                          <button className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 bg-slate-700/40 hover:bg-slate-600/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                            <ChevronLeft className="w-5 h-5 text-slate-300" />
+                          </button>
+                        )}
                         <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
                           <img
                             src={hairstyle.image}
@@ -111,7 +112,6 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                         </div>
                       ))}
                     </div>
-                  </div>
                 </div>
               ) : index === 1 ? (
                 <div className="flex flex-col gap-6">
@@ -124,33 +124,33 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
 
                   {/* Hairstyle Grid for second category */}
-                  <div className="relative">
-                    <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                      <ChevronLeft className="w-6 h-6 text-white" />
-                    </button>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                      {category.hairstyles.map((hairstyle) => (
-                        <div
-                          key={hairstyle.id}
-                          className="group cursor-pointer relative rounded-2xl overflow-hidden border border-slate-700/30 hover:border-slate-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-slate-500/20 transform hover:scale-105"
-                        >
-                          <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
-                            <img
-                              src={hairstyle.image}
-                              alt={hairstyle.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          </div>
-
-                          {hairstyle.title && (
-                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
-                              <p className="text-white text-sm font-medium">{hairstyle.title}</p>
-                            </div>
-                          )}
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    {category.hairstyles.map((hairstyle, idx) => (
+                      <div
+                        key={hairstyle.id}
+                        className="group cursor-pointer relative rounded-2xl overflow-visible border border-slate-700/30 hover:border-slate-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-slate-500/20 transform hover:scale-105"
+                      >
+                        {idx === 0 && (
+                          <button className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 bg-slate-700/40 hover:bg-slate-600/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                            <ChevronLeft className="w-5 h-5 text-slate-300" />
+                          </button>
+                        )}
+                        <div className="aspect-square overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
+                          <img
+                            src={hairstyle.image}
+                            alt={hairstyle.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
-                      ))}
-                    </div>
+
+                        {hairstyle.title && (
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black via-black/50 to-transparent">
+                            <p className="text-white text-sm font-medium">{hairstyle.title}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : null}
