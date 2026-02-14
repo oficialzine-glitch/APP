@@ -28,12 +28,12 @@ const hairstyleCategories: HairstyleCategory[] = [
     badge: 'NEW',
     gradient: 'from-cyan-500 via-blue-500 to-blue-600',
     hairstyles: [
-      { id: '1', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Ombre+Blonde', title: 'Side Part' },
-      { id: '2', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Rose+Gold', title: 'Wavy Side Part' },
-      { id: '3', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Platinum+Blonde', title: 'Buzz Cut' },
-      { id: '4', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Cherry+Red', title: 'Beach Waves' },
-      { id: '5', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Silver+Ash', title: 'Middle Part' },
-      { id: '6', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Copper+Gold', title: 'Warrior Cut' },
+      { id: '1', image: 'https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Image%201.png', title: 'Side Part' },
+      { id: '2', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Wavy+Side+Part', title: 'Wavy Side Part' },
+      { id: '3', image: 'https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Image%203.png', title: 'Buzz Cut' },
+      { id: '4', image: 'https://hebwatwkpszebonmrige.supabase.co/storage/v1/object/public/nextface%20images/Image%204.png', title: 'Beach Waves' },
+      { id: '5', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Middle+Part', title: 'Middle Part' },
+      { id: '6', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Warrior+Cut', title: 'Warrior Cut' },
     ]
   },
   {
