@@ -23,7 +23,7 @@ interface HairstyleCategory {
 const hairstyleCategories: HairstyleCategory[] = [
   {
     id: 'color',
-    title: 'Colored Highlights',
+    title: 'Classic Hairstyles',
     subtitle: '2,340 Used by people',
     badge: 'NEW',
     gradient: 'from-cyan-500 via-blue-500 to-blue-600',
@@ -62,13 +62,13 @@ const hairstyleCategories: HairstyleCategory[] = [
 
 export default function HaircutsPage({ onBack }: HaircutsPageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black p-4 pb-20 pt-8">
       <div className="max-w-5xl mx-auto">
-        <div className="space-y-10">
+        <div className="space-y-16">
           {hairstyleCategories.map((category, index) => (
             <div key={category.id} className="animate-fade-in">
               {index === 0 ? (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-8">
                   <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
                     {category.badge && (
                       <div className="absolute top-4 left-6 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -85,7 +85,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                     <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-slate-700/40 hover:bg-slate-600/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
                       <ChevronLeft className="w-5 h-5 text-slate-300" />
                     </button>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                       {category.hairstyles.map((hairstyle) => (
                         <div
                           key={hairstyle.id}
@@ -111,7 +111,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   </div>
                 </div>
               ) : index === 1 ? (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-8">
                   <div className={`bg-gradient-to-r ${category.gradient} rounded-3xl p-8 relative overflow-hidden`}>
                     <div className="relative z-10">
                       <h2 className="text-3xl font-bold text-white">{category.title}</h2>
@@ -123,7 +123,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                     <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 z-20 bg-slate-700/40 hover:bg-slate-600/50 backdrop-blur-sm p-3 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center">
                       <ChevronLeft className="w-5 h-5 text-slate-300" />
                     </button>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-4">
                       {category.hairstyles.map((hairstyle) => (
                         <div
                           key={hairstyle.id}
