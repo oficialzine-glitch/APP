@@ -30,6 +30,10 @@ const hairstyleCategories: HairstyleCategory[] = [
     hairstyles: [
       { id: '1', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Ombre+Blonde', title: 'Ombre Blonde' },
       { id: '2', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Rose+Gold', title: 'Rose Gold' },
+      { id: '3', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Platinum+Blonde', title: 'Platinum Blonde' },
+      { id: '4', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Cherry+Red', title: 'Cherry Red' },
+      { id: '5', image: 'https://via.placeholder.com/400x400/a78bfa/ffffff?text=Silver+Ash', title: 'Silver Ash' },
+      { id: '6', image: 'https://via.placeholder.com/400x400/ec4899/ffffff?text=Copper+Gold', title: 'Copper Gold' },
     ]
   },
   {
@@ -40,8 +44,6 @@ const hairstyleCategories: HairstyleCategory[] = [
     hairstyles: [
       { id: '1', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Loose+Curls', title: 'Loose Curls' },
       { id: '2', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Tight+Curls', title: 'Tight Curls' },
-      { id: '3', image: 'https://via.placeholder.com/400x400/64748b/ffffff?text=Beach+Waves', title: 'Beach Waves' },
-      { id: '4', image: 'https://via.placeholder.com/400x400/475569/ffffff?text=Soft+Waves', title: 'Soft Waves' },
     ]
   },
   {
