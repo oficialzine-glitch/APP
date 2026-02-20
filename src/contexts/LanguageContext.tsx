@@ -131,7 +131,7 @@ const translations: Record<Language, Translations> = {
     analysis: 'Analysis',
     results: 'Results',
     profile: 'Profile',
-    haircuts: 'Haircuts',
+    haircuts: 'Chat',
     
     // Home Page
     startAIAnalysis: 'Start AI Analysis',
@@ -253,7 +253,7 @@ const translations: Record<Language, Translations> = {
     analysis: 'Análisis',
     results: 'Resultados',
     profile: 'Perfil',
-    haircuts: 'Pelo',
+    haircuts: 'Chat',
     
     // Home Page
     startAIAnalysis: 'Iniciar Análisis IA',
