@@ -85,17 +85,17 @@ function formatDate(dateStr: string) {
 }
 
 function getScoreColor(score: number) {
-  if (score >= 80) return 'text-emerald-400';
+  if (score >= 80) return 'text-blue-300';
   if (score >= 60) return 'text-cyan-400';
-  if (score >= 40) return 'text-yellow-400';
-  return 'text-rose-400';
+  if (score >= 40) return 'text-sky-400';
+  return 'text-blue-400';
 }
 
 function getScoreBg(score: number) {
-  if (score >= 80) return 'from-emerald-500 to-cyan-500';
+  if (score >= 80) return 'from-blue-400 to-cyan-400';
   if (score >= 60) return 'from-cyan-400 to-blue-500';
-  if (score >= 40) return 'from-yellow-400 to-orange-500';
-  return 'from-rose-400 to-orange-500';
+  if (score >= 40) return 'from-sky-400 to-blue-500';
+  return 'from-blue-500 to-sky-600';
 }
 
 export default function HaircutsPage({ onBack }: HaircutsPageProps) {
@@ -132,9 +132,8 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black pb-24">
       {/* Ambient header glow */}
       <div className="absolute top-0 left-0 right-0 h-64 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/20 via-cyan-500/10 to-transparent" />
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl" />
-        <div className="absolute top-0 right-1/4 w-48 h-48 bg-blue-600/15 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/10 via-cyan-500/5 to-transparent" />
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-2xl mx-auto px-4 pt-2">
