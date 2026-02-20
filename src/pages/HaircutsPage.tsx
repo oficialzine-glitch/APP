@@ -232,54 +232,8 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
               </div>
             )}
 
-            {/* Selected analysis context banner */}
-            {selectedAnalysis && (
-              <div className="mt-3 bg-cyan-950/50 border border-cyan-500/30 rounded-2xl px-4 py-3 flex items-center gap-3 animate-fade-in">
-                <div className={`w-8 h-8 flex-shrink-0 bg-gradient-to-br ${getScoreBg(selectedScore!)} rounded-xl flex items-center justify-center`}>
-                  <Star className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-cyan-300 text-xs font-medium">Analysis context loaded</div>
-                  <div className="text-white text-sm truncate">
-                    Score {selectedScore} · {formatDate(selectedAnalysis.created_at)}
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedAnalysis(null)}
-                  className="text-slate-500 hover:text-slate-300 transition-colors flex-shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
           </div>
         )}
-
-        {/* Topic cards — horizontal scroll */}
-        <div className="mb-8">
-          <h3 className="text-white font-semibold text-base mb-3">Or pick a topic</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
-            {filteredTopics.map(topic => (
-              <button
-                key={topic.id}
-                className={`flex-shrink-0 w-36 bg-gradient-to-br ${topic.gradient} backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 text-left hover:border-cyan-500/40 hover:scale-105 active:scale-95 transition-all duration-200 group`}
-              >
-                <div className={`w-10 h-10 bg-gradient-to-br ${topic.iconBg} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200`}>
-                  {topic.icon}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mb-0.5">{topic.title}</div>
-                <div className="text-slate-400 text-xs leading-tight">{topic.subtitle}</div>
-                <div className="mt-3 flex items-center justify-end">
-                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-cyan-400" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Start chat CTA */}
         <div className="mb-8">
