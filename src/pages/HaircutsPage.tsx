@@ -1,75 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Search, ChevronRight, Sparkles, Dumbbell, Heart,
+  Search, Sparkles, Dumbbell, Heart,
   Brain, Palette, Camera, Zap, MessageCircle, ScanFace,
-  Clock, Star, X
+  Clock, Trash2
 } from 'lucide-react';
 import { getHistory, AnalysisRow } from '../lib/history';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  getChatSessions,
+  getChatSessionByAnalysis,
+  createChatSession,
+  deleteChatSession,
+  ChatSession,
+} from '../lib/chatSessions';
 
 interface HaircutsPageProps {
   onBack: () => void;
 }
-
-interface Topic {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  gradient: string;
-  iconBg: string;
-}
-
-const staticTopics: Topic[] = [
-  {
-    id: 'glow-tips',
-    title: 'Glow tips',
-    subtitle: 'Skincare & radiance',
-    icon: <Sparkles className="w-6 h-6 text-white" />,
-    gradient: 'from-cyan-500/30 to-blue-600/30',
-    iconBg: 'from-cyan-400 to-blue-500',
-  },
-  {
-    id: 'fitness',
-    title: 'Fitness advice',
-    subtitle: 'Body & training',
-    icon: <Dumbbell className="w-6 h-6 text-white" />,
-    gradient: 'from-blue-500/30 to-cyan-400/30',
-    iconBg: 'from-blue-500 to-cyan-400',
-  },
-  {
-    id: 'mental',
-    title: 'Confidence boost',
-    subtitle: 'Mindset & self-image',
-    icon: <Brain className="w-6 h-6 text-white" />,
-    gradient: 'from-sky-500/30 to-blue-400/30',
-    iconBg: 'from-sky-400 to-blue-500',
-  },
-  {
-    id: 'style',
-    title: 'Style guide',
-    subtitle: 'Fashion & aesthetics',
-    icon: <Palette className="w-6 h-6 text-white" />,
-    gradient: 'from-teal-500/30 to-cyan-500/30',
-    iconBg: 'from-teal-400 to-cyan-500',
-  },
-  {
-    id: 'health',
-    title: 'Wellness',
-    subtitle: 'Habits & routines',
-    icon: <Heart className="w-6 h-6 text-white" />,
-    gradient: 'from-blue-400/30 to-sky-500/30',
-    iconBg: 'from-blue-400 to-sky-400',
-  },
-  {
-    id: 'photo',
-    title: 'Photo tips',
-    subtitle: 'Look your best',
-    icon: <Camera className="w-6 h-6 text-white" />,
-    gradient: 'from-cyan-400/30 to-blue-500/30',
-    iconBg: 'from-cyan-500 to-blue-400',
-  },
-];
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
@@ -104,6 +51,10 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loadingAnalyses, setLoadingAnalyses] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -111,14 +62,12 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
     getHistory({ userId: user.id, limit: 10 }).then(({ ok, data }) => {
       if (ok && data) setAnalyses(data);
     }).finally(() => setLoadingAnalyses(false));
-  }, [user]);
 
-  const filteredTopics = staticTopics.filter(
-    t =>
-      search.trim() === '' ||
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.subtitle.toLowerCase().includes(search.toLowerCase())
-  );
+    setLoadingSessions(true);
+    getChatSessions(user.id).then(({ ok, data }) => {
+      if (ok) setChatSessions(data);
+    }).finally(() => setLoadingSessions(false));
+  }, [user]);
 
   const handleSelectAnalysis = (row: AnalysisRow) => {
     setSelectedAnalysis(prev => prev?.id === row.id ? null : row);
@@ -126,6 +75,50 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
 
   const selectedScore = selectedAnalysis
     ? (selectedAnalysis.overall_score ?? selectedAnalysis.analysis?.overall ?? 0)
+    : null;
+
+  const analysisHasChat = (analysisId: string) =>
+    chatSessions.some(s => s.analysis_id === analysisId);
+
+  const handleStartChat = async () => {
+    if (!user || !selectedAnalysis) return;
+    setStartingChat(true);
+    try {
+      const existing = await getChatSessionByAnalysis(user.id, selectedAnalysis.id);
+      if (existing.ok && existing.data) {
+        // session already exists — open it
+        // TODO: navigate to chat view with existing.data.id
+        console.log('Resuming chat session:', existing.data.id);
+        return;
+      }
+      const score = selectedAnalysis.overall_score ?? selectedAnalysis.analysis?.overall ?? 0;
+      const result = await createChatSession({
+        userId: user.id,
+        analysisId: selectedAnalysis.id,
+        analysisScore: score,
+      });
+      if (result.ok && result.data) {
+        setChatSessions(prev => [result.data!, ...prev]);
+        // TODO: navigate to chat view with result.data.id
+        console.log('Created chat session:', result.data.id);
+      }
+    } finally {
+      setStartingChat(false);
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeletingId(sessionId);
+    const { ok } = await deleteChatSession(sessionId);
+    if (ok) {
+      setChatSessions(prev => prev.filter(s => s.id !== sessionId));
+    }
+    setDeletingId(null);
+  };
+
+  const sessionForSelected = selectedAnalysis
+    ? chatSessions.find(s => s.analysis_id === selectedAnalysis.id) ?? null
     : null;
 
   return (
@@ -187,6 +180,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                   const score = row.overall_score ?? row.analysis?.overall ?? 0;
                   const date = formatDate(row.created_at);
                   const isSelected = selectedAnalysis?.id === row.id;
+                  const hasChat = analysisHasChat(row.id);
                   return (
                     <button
                       key={row.id}
@@ -197,14 +191,9 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                           : 'border-slate-700/50 hover:border-cyan-500/40'
                       }`}
                     >
-                      {/* Thumbnail or placeholder */}
                       <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-slate-700/50 relative">
                         {row.image_url ? (
-                          <img
-                            src={row.image_url}
-                            alt="analysis"
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={row.image_url} alt="analysis" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <ScanFace className="w-6 h-6 text-slate-500" />
@@ -219,6 +208,11 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                             </div>
                           </div>
                         )}
+                        {hasChat && !isSelected && (
+                          <div className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                            <MessageCircle className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
                       </div>
                       <div className={`text-lg font-bold leading-none mb-0.5 ${getScoreColor(score)}`}>{score}</div>
                       <div className="text-slate-400 text-xs leading-tight">score</div>
@@ -231,25 +225,115 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
                 })}
               </div>
             )}
-
           </div>
         )}
 
         {/* Start chat CTA */}
         <div className="mb-8">
-          <button className="w-full relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+          <button
+            onClick={handleStartChat}
+            disabled={!selectedAnalysis || startingChat}
+            className={`w-full relative overflow-hidden text-white font-bold py-4 rounded-2xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+              selectedAnalysis
+                ? 'bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95'
+                : 'bg-slate-700/60 cursor-not-allowed opacity-60'
+            }`}
+          >
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)] opacity-70" />
             <MessageCircle className="w-5 h-5 relative z-10" />
             <span className="relative z-10">
-              {selectedAnalysis ? `Chat about score ${selectedScore}` : 'Start a new chat'}
+              {startingChat
+                ? 'Opening chat…'
+                : sessionForSelected
+                  ? `Continue chat · Score ${selectedScore}`
+                  : selectedAnalysis
+                    ? `Start chat · Score ${selectedScore}`
+                    : 'Select an analysis above'}
             </span>
           </button>
           {selectedAnalysis && (
             <p className="text-center text-slate-500 text-xs mt-2">
-              The AI will receive your full analysis as context
+              {sessionForSelected
+                ? 'Resuming your existing conversation for this analysis'
+                : 'The AI will receive your full analysis as context'}
             </p>
           )}
         </div>
+
+        {/* Chat history */}
+        {user && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageCircle className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-white font-semibold text-base">Chat history</h3>
+            </div>
+
+            {loadingSessions ? (
+              <div className="flex flex-col gap-2">
+                {[1, 2].map(i => (
+                  <div key={i} className="h-16 bg-slate-800/50 rounded-2xl animate-pulse" />
+                ))}
+              </div>
+            ) : chatSessions.length === 0 ? (
+              <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl px-4 py-5 text-center">
+                <MessageCircle className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <p className="text-slate-500 text-sm">No chats yet — start one above!</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {chatSessions.map(session => {
+                  const analysis = analyses.find(a => a.id === session.analysis_id);
+                  const messageCount = session.messages?.length ?? 0;
+                  const isDeleting = deletingId === session.id;
+                  return (
+                    <button
+                      key={session.id}
+                      className="w-full bg-slate-800/60 border border-slate-700/50 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-cyan-500/40 hover:bg-slate-800/80 active:scale-[0.99] transition-all duration-200 group text-left"
+                    >
+                      {/* Avatar / thumbnail */}
+                      <div className={`w-10 h-10 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br ${getScoreBg(session.analysis_score)}`}>
+                        {analysis?.image_url ? (
+                          <img src={analysis.image_url} alt="analysis" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ScanFace className="w-5 h-5 text-white" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-sm font-semibold ${getScoreColor(session.analysis_score)}`}>
+                            Score {session.analysis_score}
+                          </span>
+                          <span className="text-slate-600 text-xs">·</span>
+                          <span className="text-slate-400 text-xs">{formatDate(session.updated_at)}</span>
+                        </div>
+                        <div className="text-slate-500 text-xs mt-0.5 truncate">
+                          {messageCount === 0
+                            ? 'No messages yet'
+                            : `${messageCount} message${messageCount !== 1 ? 's' : ''}`}
+                        </div>
+                      </div>
+
+                      {/* Delete */}
+                      <button
+                        onClick={(e) => handleDeleteSession(session.id, e)}
+                        disabled={isDeleting}
+                        className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                      >
+                        {isDeleting
+                          ? <div className="w-3 h-3 border border-slate-500 border-t-transparent rounded-full animate-spin" />
+                          : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Footer badge */}
         <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
