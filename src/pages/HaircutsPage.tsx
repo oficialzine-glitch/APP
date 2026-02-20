@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { Search, ChevronRight, Sparkles, Dumbbell, Heart, Brain, Palette, Camera, Star, Zap, MessageCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Search, ChevronRight, Sparkles, Dumbbell, Heart,
+  Brain, Palette, Camera, Zap, MessageCircle, ScanFace,
+  Clock, Star, X
+} from 'lucide-react';
+import { getHistory, AnalysisRow } from '../lib/history';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HaircutsPageProps {
   onBack: () => void;
@@ -14,16 +20,7 @@ interface Topic {
   iconBg: string;
 }
 
-interface HistoryItem {
-  id: string;
-  topic: string;
-  preview: string;
-  icon: React.ReactNode;
-  iconGradient: string;
-  time: string;
-}
-
-const topics: Topic[] = [
+const staticTopics: Topic[] = [
   {
     id: 'glow-tips',
     title: 'Glow tips',
@@ -74,50 +71,62 @@ const topics: Topic[] = [
   },
 ];
 
-const historyItems: HistoryItem[] = [
-  {
-    id: '1',
-    topic: 'Skincare routine',
-    preview: 'Best morning routine for oily skin',
-    icon: <Sparkles className="w-5 h-5 text-white" />,
-    iconGradient: 'from-cyan-400 to-blue-500',
-    time: '2h ago',
-  },
-  {
-    id: '2',
-    topic: 'Fitness advice',
-    preview: 'How to build muscle while staying lean',
-    icon: <Dumbbell className="w-5 h-5 text-white" />,
-    iconGradient: 'from-blue-500 to-cyan-400',
-    time: 'Yesterday',
-  },
-  {
-    id: '3',
-    topic: 'Style guide',
-    preview: 'Outfits that complement sharp jawlines',
-    icon: <Palette className="w-5 h-5 text-white" />,
-    iconGradient: 'from-teal-400 to-cyan-500',
-    time: '3d ago',
-  },
-  {
-    id: '4',
-    topic: 'Confidence boost',
-    preview: 'Daily habits to improve self-confidence',
-    icon: <Brain className="w-5 h-5 text-white" />,
-    iconGradient: 'from-sky-400 to-blue-500',
-    time: '1w ago',
-  },
-];
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffH = diffMs / (1000 * 60 * 60);
+  if (diffH < 1) return 'Just now';
+  if (diffH < 24) return `${Math.floor(diffH)}h ago`;
+  const diffD = diffH / 24;
+  if (diffD < 2) return 'Yesterday';
+  if (diffD < 7) return `${Math.floor(diffD)}d ago`;
+  return d.toLocaleDateString();
+}
+
+function getScoreColor(score: number) {
+  if (score >= 80) return 'text-emerald-400';
+  if (score >= 60) return 'text-cyan-400';
+  if (score >= 40) return 'text-yellow-400';
+  return 'text-rose-400';
+}
+
+function getScoreBg(score: number) {
+  if (score >= 80) return 'from-emerald-500 to-cyan-500';
+  if (score >= 60) return 'from-cyan-400 to-blue-500';
+  if (score >= 40) return 'from-yellow-400 to-orange-500';
+  return 'from-rose-400 to-orange-500';
+}
 
 export default function HaircutsPage({ onBack }: HaircutsPageProps) {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
+  const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
+  const [loadingAnalyses, setLoadingAnalyses] = useState(false);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
 
-  const filteredTopics = topics.filter(
+  useEffect(() => {
+    if (!user) return;
+    setLoadingAnalyses(true);
+    getHistory({ userId: user.id, limit: 10 }).then(({ ok, data }) => {
+      if (ok && data) setAnalyses(data);
+    }).finally(() => setLoadingAnalyses(false));
+  }, [user]);
+
+  const filteredTopics = staticTopics.filter(
     t =>
       search.trim() === '' ||
       t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.subtitle.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleSelectAnalysis = (row: AnalysisRow) => {
+    setSelectedAnalysis(prev => prev?.id === row.id ? null : row);
+  };
+
+  const selectedScore = selectedAnalysis
+    ? (selectedAnalysis.overall_score ?? selectedAnalysis.analysis?.overall ?? 0)
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-black pb-24">
@@ -131,9 +140,7 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
       <div className="relative max-w-2xl mx-auto px-4 pt-2">
         {/* Hero text */}
         <div className="mb-6 mt-2">
-          <h2 className="text-3xl font-bold text-white leading-tight mb-1">
-            Ask, explore,
-          </h2>
+          <h2 className="text-3xl font-bold text-white leading-tight mb-1">Ask, explore,</h2>
           <h2 className="text-3xl font-bold leading-tight">
             <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-500 bg-clip-text text-transparent">
               glow up.
@@ -156,9 +163,102 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
           />
         </div>
 
+        {/* Previous analyses as context selectors */}
+        {user && (
+          <div className="mb-7">
+            <div className="flex items-center gap-2 mb-3">
+              <ScanFace className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-white font-semibold text-base">Ask about an analysis</h3>
+            </div>
+
+            {loadingAnalyses ? (
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex-shrink-0 w-32 h-28 bg-slate-800/50 rounded-2xl animate-pulse" />
+                ))}
+              </div>
+            ) : analyses.length === 0 ? (
+              <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl px-4 py-5 text-center">
+                <ScanFace className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <p className="text-slate-500 text-sm">No analyses yet — run your first scan!</p>
+              </div>
+            ) : (
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+                {analyses.map(row => {
+                  const score = row.overall_score ?? row.analysis?.overall ?? 0;
+                  const date = formatDate(row.created_at);
+                  const isSelected = selectedAnalysis?.id === row.id;
+                  return (
+                    <button
+                      key={row.id}
+                      onClick={() => handleSelectAnalysis(row)}
+                      className={`flex-shrink-0 w-32 bg-slate-800/60 backdrop-blur-sm border rounded-2xl p-3 text-left transition-all duration-200 hover:scale-105 active:scale-95 group ${
+                        isSelected
+                          ? 'border-cyan-400/70 ring-1 ring-cyan-400/40 bg-cyan-950/40'
+                          : 'border-slate-700/50 hover:border-cyan-500/40'
+                      }`}
+                    >
+                      {/* Thumbnail or placeholder */}
+                      <div className="w-full h-14 rounded-xl overflow-hidden mb-2 bg-slate-700/50 relative">
+                        {row.image_url ? (
+                          <img
+                            src={row.image_url}
+                            alt="analysis"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ScanFace className="w-6 h-6 text-slate-500" />
+                          </div>
+                        )}
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-cyan-500/20 flex items-center justify-center">
+                            <div className="w-5 h-5 bg-cyan-400 rounded-full flex items-center justify-center">
+                              <svg className="w-3 h-3 text-black" viewBox="0 0 12 12" fill="none">
+                                <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className={`text-lg font-bold leading-none mb-0.5 ${getScoreColor(score)}`}>{score}</div>
+                      <div className="text-slate-400 text-xs leading-tight">score</div>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Clock className="w-2.5 h-2.5 text-slate-600" />
+                        <span className="text-slate-500 text-xs">{date}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Selected analysis context banner */}
+            {selectedAnalysis && (
+              <div className="mt-3 bg-cyan-950/50 border border-cyan-500/30 rounded-2xl px-4 py-3 flex items-center gap-3 animate-fade-in">
+                <div className={`w-8 h-8 flex-shrink-0 bg-gradient-to-br ${getScoreBg(selectedScore!)} rounded-xl flex items-center justify-center`}>
+                  <Star className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-cyan-300 text-xs font-medium">Analysis context loaded</div>
+                  <div className="text-white text-sm truncate">
+                    Score {selectedScore} · {formatDate(selectedAnalysis.created_at)}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedAnalysis(null)}
+                  className="text-slate-500 hover:text-slate-300 transition-colors flex-shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Topic cards — horizontal scroll */}
         <div className="mb-8">
-          <h3 className="text-white font-semibold text-base mb-3">Choose a topic</h3>
+          <h3 className="text-white font-semibold text-base mb-3">Or pick a topic</h3>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
             {filteredTopics.map(topic => (
               <button
@@ -182,47 +282,24 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
           </div>
         </div>
 
-        {/* Quick start button */}
+        {/* Start chat CTA */}
         <div className="mb-8">
           <button className="w-full relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)] opacity-70" />
             <MessageCircle className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">Start a new chat</span>
+            <span className="relative z-10">
+              {selectedAnalysis ? `Chat about score ${selectedScore}` : 'Start a new chat'}
+            </span>
           </button>
+          {selectedAnalysis && (
+            <p className="text-center text-slate-500 text-xs mt-2">
+              The AI will receive your full analysis as context
+            </p>
+          )}
         </div>
 
-        {/* History section */}
-        {historyItems.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white font-semibold text-base">History</h3>
-              <button className="text-cyan-400 text-sm font-medium hover:text-cyan-300 transition-colors">See all</button>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden divide-y divide-slate-700/40">
-              {historyItems.map(item => (
-                <button
-                  key={item.id}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-700/30 active:bg-slate-700/50 transition-colors duration-150 text-left"
-                >
-                  <div className={`w-9 h-9 flex-shrink-0 bg-gradient-to-br ${item.iconGradient} rounded-xl flex items-center justify-center`}>
-                    {item.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-white text-sm font-medium truncate">{item.topic}</div>
-                    <div className="text-slate-400 text-xs truncate">{item.preview}</div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-slate-500 text-xs">{item.time}</span>
-                    <ChevronRight className="w-4 h-4 text-slate-600" />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Featured badge */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-slate-500 text-xs">
+        {/* Footer badge */}
+        <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
           <Zap className="w-3.5 h-3.5 text-cyan-500" />
           <span>Powered by GPT — personalized for your face analysis</span>
         </div>
