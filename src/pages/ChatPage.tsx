@@ -114,9 +114,16 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
               <ArrowLeft className="w-5 h-5 text-white" />
             </button>
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/30">
+              <div className="w-9 h-9 rounded-full bg-[#0d0d0d] border-2 border-white/80 flex items-center justify-center">
                 <svg viewBox="0 0 40 40" className="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 2 C20 2 21.8 11.5 26 16 C30.2 20.5 38 20 38 20 C38 20 30.2 19.5 26 24 C21.8 28.5 20 38 20 38 C20 38 18.2 28.5 14 24 C9.8 19.5 2 20 2 20 C2 20 9.8 20.5 14 16 C18.2 11.5 20 2 20 2Z" fill="white" />
+                  <defs>
+                    <linearGradient id="headerSparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#22d3ee" />
+                      <stop offset="50%" stopColor="#38bdf8" />
+                      <stop offset="100%" stopColor="#2563eb" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M20 2 C20 2 21.8 11.5 26 16 C30.2 20.5 38 20 38 20 C38 20 30.2 19.5 26 24 C21.8 28.5 20 38 20 38 C20 38 18.2 28.5 14 24 C9.8 19.5 2 20 2 20 C2 20 9.8 20.5 14 16 C18.2 11.5 20 2 20 2Z" fill="url(#headerSparkGrad)" />
                 </svg>
               </div>
               <div>
