@@ -11,6 +11,7 @@ import PreviousAnalysesPage from './pages/PreviousAnalysesPage';
 import GlowupMapPage from './pages/GlowupMapPage';
 import OnboardingPage from './pages/OnboardingPage';
 import HaircutsPage from './pages/HaircutsPage';
+import ChatPage from './pages/ChatPage';
 import PremiumModal from './components/PremiumModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import CreatorCodeModal from './components/CreatorCodeModal';
@@ -18,12 +19,14 @@ import { FacialAnalysis } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
 
-type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results' | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'haircuts';
+type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results' | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'haircuts' | 'chat';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('intro');
   const [pageTransition, setPageTransition] = useState(false);
   const [analysisData, setAnalysisData] = useState<FacialAnalysis | null>(null);
+  const [chatAnalysisId, setChatAnalysisId] = useState<string>('');
+  const [chatAnalysisScore, setChatAnalysisScore] = useState<number | undefined>(undefined);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showCreatorCodeModal, setShowCreatorCodeModal] = useState(false);
   const [logoTapCount, setLogoTapCount] = useState(0);
@@ -80,6 +83,12 @@ function App() {
     }, 150);
   };
 
+  const handleNavigateToChat = (analysisId: string, score?: number) => {
+    setChatAnalysisId(analysisId);
+    setChatAnalysisScore(score);
+    handlePageChange('chat');
+  };
+
   const handleLogoTap = () => {
     setLogoTapCount(prev => prev + 1);
     
@@ -118,11 +127,13 @@ function App() {
       case 'analysis-view':
         return <AnalysisViewPage onBack={() => setCurrentPage('results')} analysisData={analysisData} />;
       case 'previous-analyses':
-        return <PreviousAnalysesPage onBack={() => setCurrentPage('analysis')} />;
+        return <PreviousAnalysesPage onBack={() => setCurrentPage('analysis')} onNavigateToChat={handleNavigateToChat} />;
       case 'glowup-map':
         return <GlowupMapPage onBack={() => setCurrentPage('home')} />;
       case 'haircuts':
         return <HaircutsPage onBack={() => setCurrentPage('home')} />;
+      case 'chat':
+        return <ChatPage onBack={() => setCurrentPage('previous-analyses')} analysisId={chatAnalysisId} analysisScore={chatAnalysisScore} />;
       default:
         return <HomePage onNavigate={setCurrentPage} />;
     }
@@ -133,7 +144,7 @@ function App() {
       {/* Page Content with Transition */}
       <div className={`transition-opacity duration-150 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
       {/* Top Navigation Bar */}
-      {!['upload'].includes(currentPage) && (
+      {!['upload', 'chat'].includes(currentPage) && (
         <div className="flex justify-between items-center mb-4 pt-4 px-4">
           {/* App Name - Top Left */}
           <div>
@@ -166,7 +177,7 @@ function App() {
       </div>
 
       {/* Static Bottom Navigation - Only show on main pages, not on special pages */}
-      {!['upload', 'previous-analyses'].includes(currentPage) && (
+      {!['upload', 'previous-analyses', 'chat'].includes(currentPage) && (
         <div className="fixed bottom-0 left-0 right-0 p-2 bg-black/20 backdrop-blur-sm">
           <div className="max-w-md mx-auto px-2">
             <div className="flex justify-center">

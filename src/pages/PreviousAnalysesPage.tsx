@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Calendar, Eye, Trash2, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Eye, Trash2, User, MessageCircle } from 'lucide-react';
 import { getHistory, deleteAnalysis, AnalysisRow } from '../lib/history';
 import { useAuth } from '../contexts/AuthContext';
 import AnalysisResults from '../components/AnalysisResults';
@@ -8,9 +8,10 @@ import PremiumModal from '../components/PremiumModal';
 
 interface PreviousAnalysesPageProps {
   onBack: () => void;
+  onNavigateToChat?: (analysisId: string, score?: number) => void;
 }
 
-export default function PreviousAnalysesPage({ onBack }: PreviousAnalysesPageProps) {
+export default function PreviousAnalysesPage({ onBack, onNavigateToChat }: PreviousAnalysesPageProps) {
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
@@ -226,14 +227,26 @@ export default function PreviousAnalysesPage({ onBack }: PreviousAnalysesPagePro
 
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-4 border-t border-slate-700/30">
-                  <button
-                    onClick={() => handleViewAnalysis(analysis)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 hover:scale-105"
-                  >
-                    <Eye className="w-4 h-4" />
-                    <span>View Details</span>
-                  </button>
-                  
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleViewAnalysis(analysis)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 hover:scale-105"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>View Details</span>
+                    </button>
+
+                    {onNavigateToChat && (
+                      <button
+                        onClick={() => onNavigateToChat(analysis.id, Math.round(analysis.analysis?.overall || 0))}
+                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-200 hover:scale-105"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Chat</span>
+                      </button>
+                    )}
+                  </div>
+
                   <button
                     onClick={() => handleDeleteAnalysis(analysis.id)}
                     className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 hover:text-red-300 transition-all duration-200"
