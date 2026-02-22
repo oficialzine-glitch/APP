@@ -18,10 +18,6 @@ interface ChatPageProps {
   analysisScore?: number;
 }
 
-const SUGGESTIONS = [
-  'How can I improve my results?',
-  'What are my strongest features?',
-];
 
 export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPageProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -101,11 +97,11 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const userInitial = user?.email?.[0]?.toUpperCase() ?? 'U';
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1e] via-[#0d1528] to-[#080d18] flex flex-col">
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#111111]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-gradient-to-r from-[#0a0f1e]/90 to-[#0d1528]/90 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
@@ -143,12 +139,12 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-6 pt-8">
-              <div className="relative w-20 h-20 rounded-full shadow-2xl shadow-cyan-500/20 border border-white/10 overflow-hidden">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 32px 8px rgba(34,211,238,0.25)' }}>
                 {analysisImageUrl ? (
                   <img src={analysisImageUrl} alt="Analysis" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
-                    <svg viewBox="0 0 40 40" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-full h-full bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/30 rounded-full flex items-center justify-center">
+                    <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <defs>
                         <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                           <stop offset="0%" stopColor="#22d3ee" />
@@ -160,27 +156,12 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                     </svg>
                   </div>
                 )}
-                <div className="absolute inset-0 rounded-full blur-xl bg-cyan-400/15 -z-10" />
               </div>
               <div className="text-center px-4">
                 <h2 className="text-2xl font-bold text-white mb-2">Ask About Your Analysis</h2>
                 <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
                   Get personalized insights, ask questions about your score, and receive expert advice on improving your facial aesthetics.
                 </p>
-              </div>
-              <div className="w-full flex flex-row gap-3 mt-2 px-2">
-                {SUGGESTIONS.map(s => (
-                  <button
-                    key={s}
-                    onClick={() => handleSend(s)}
-                    className="flex-1 px-3 py-8 bg-[#0a0f1a] border border-black rounded-2xl text-center text-sm text-white font-semibold transition-all duration-200 active:scale-95 hover:border-cyan-500/40"
-                    style={{
-                      boxShadow: '0 0 18px 2px rgba(34,211,238,0.07), inset 0 0 24px 0px rgba(56,189,248,0.05)',
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
               </div>
             </div>
           ) : (
@@ -201,7 +182,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                       className={`px-5 py-3.5 rounded-3xl text-[15px] leading-relaxed whitespace-pre-wrap break-words ${
                         message.role === 'user'
                           ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 rounded-br-md'
-                          : 'bg-[#1c1c1e] text-white border border-white/6 rounded-bl-md'
+                          : 'bg-[#111d35] text-white border border-cyan-400/15 rounded-bl-md'
                       }`}
                     >
                       {message.content}
@@ -238,7 +219,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/20">
                     <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
                   </div>
-                  <div className="bg-[#1c1c1e] border border-white/6 rounded-3xl rounded-bl-md px-5 py-4">
+                  <div className="bg-[#111d35] border border-cyan-400/15 rounded-3xl rounded-bl-md px-5 py-4">
                     <div className="flex gap-1.5 items-center">
                       <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -254,13 +235,13 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         </div>
 
         {/* Input bar */}
-        <div className="px-4 pt-3 pb-5 bg-[#0d0d0d] border-t border-white/5">
+        <div className="px-4 pt-3 pb-5 bg-gradient-to-r from-[#0a0f1e]/95 to-[#0d1528]/95 border-t border-cyan-400/15 backdrop-blur-sm">
           <div className="flex items-end gap-2">
             <button className="p-2.5 rounded-full hover:bg-white/8 transition-colors flex-shrink-0 mb-1">
               <Plus className="w-5 h-5 text-slate-400" />
             </button>
 
-            <div className="flex-1 bg-[#1c1c1e] border border-white/8 rounded-3xl px-4 py-3 focus-within:border-cyan-500/40 focus-within:ring-1 focus-within:ring-cyan-500/20 transition-all">
+            <div className="flex-1 bg-[#111d35] border border-cyan-400/20 rounded-3xl px-4 py-3 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/25 transition-all">
               <textarea
                 ref={textareaRef}
                 value={inputValue}
