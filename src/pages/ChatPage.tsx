@@ -3,6 +3,7 @@ import { ArrowLeft, Send, Loader2, Copy, ThumbsUp, Volume2, MoreVertical, Plus, 
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { saveChatMessage } from '../lib/chat';
+import { supabase } from '../lib/supabaseClient';
 
 interface ChatMessage {
   id: string;
@@ -26,8 +27,21 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [sending, setSending] = useState(false);
+  const [analysisImageUrl, setAnalysisImageUrl] = useState<string | null>(null);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!analysisId) return;
+    supabase
+      .from('facial_analyses')
+      .select('image_url')
+      .eq('id', analysisId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.image_url) setAnalysisImageUrl(data.image_url);
+      });
+  }, [analysisId]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -122,17 +136,23 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-6 pt-8">
-              <div className="relative w-20 h-20 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-2xl shadow-cyan-500/20 border border-white/8">
-                <svg viewBox="0 0 40 40" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#22d3ee" />
-                      <stop offset="50%" stopColor="#38bdf8" />
-                      <stop offset="100%" stopColor="#2563eb" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M20 2 C20 2 21.8 11.5 26 16 C30.2 20.5 38 20 38 20 C38 20 30.2 19.5 26 24 C21.8 28.5 20 38 20 38 C20 38 18.2 28.5 14 24 C9.8 19.5 2 20 2 20 C2 20 9.8 20.5 14 16 C18.2 11.5 20 2 20 2Z" fill="url(#sparkGrad)" />
-                </svg>
+              <div className="relative w-20 h-20 rounded-full shadow-2xl shadow-cyan-500/20 border border-white/10 overflow-hidden">
+                {analysisImageUrl ? (
+                  <img src={analysisImageUrl} alt="Analysis" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
+                    <svg viewBox="0 0 40 40" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#22d3ee" />
+                          <stop offset="50%" stopColor="#38bdf8" />
+                          <stop offset="100%" stopColor="#2563eb" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M20 2 C20 2 21.8 11.5 26 16 C30.2 20.5 38 20 38 20 C38 20 30.2 19.5 26 24 C21.8 28.5 20 38 20 38 C20 38 18.2 28.5 14 24 C9.8 19.5 2 20 2 20 C2 20 9.8 20.5 14 16 C18.2 11.5 20 2 20 2Z" fill="url(#sparkGrad)" />
+                    </svg>
+                  </div>
+                )}
                 <div className="absolute inset-0 rounded-full blur-xl bg-cyan-400/15 -z-10" />
               </div>
               <div className="text-center px-4">
