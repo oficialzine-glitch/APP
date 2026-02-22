@@ -131,9 +131,9 @@ function App() {
       case 'glowup-map':
         return <GlowupMapPage onBack={() => setCurrentPage('home')} />;
       case 'haircuts':
-        return <HaircutsPage onBack={() => setCurrentPage('home')} />;
+        return <HaircutsPage onBack={() => setCurrentPage('home')} onNavigateToChat={handleNavigateToChat} />;
       case 'chat':
-        return <ChatPage onBack={() => setCurrentPage('previous-analyses')} analysisId={chatAnalysisId} analysisScore={chatAnalysisScore} />;
+        return <ChatPage onBack={() => setCurrentPage('haircuts')} analysisId={chatAnalysisId} analysisScore={chatAnalysisScore} />;
       default:
         return <HomePage onNavigate={setCurrentPage} />;
     }

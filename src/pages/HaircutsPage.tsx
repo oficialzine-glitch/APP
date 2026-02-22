@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface HaircutsPageProps {
   onBack: () => void;
+  onNavigateToChat?: (analysisId: string, score?: number) => void;
 }
 
 interface Topic {
@@ -98,7 +99,7 @@ function getScoreBg(score: number) {
   return 'from-blue-500 to-sky-600';
 }
 
-export default function HaircutsPage({ onBack }: HaircutsPageProps) {
+export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageProps) {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
@@ -237,11 +238,19 @@ export default function HaircutsPage({ onBack }: HaircutsPageProps) {
 
         {/* Start chat CTA */}
         <div className="mb-8">
-          <button className="w-full relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+          <button
+            onClick={() => {
+              if (selectedAnalysis && onNavigateToChat) {
+                onNavigateToChat(selectedAnalysis.id, selectedScore || undefined);
+              }
+            }}
+            disabled={!selectedAnalysis}
+            className="w-full relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_60%_at_80%_50%,rgba(255,255,255,.16)_0%,transparent_55%)] opacity-70" />
             <MessageCircle className="w-5 h-5 relative z-10" />
             <span className="relative z-10">
-              {selectedAnalysis ? `Chat about score ${selectedScore}` : 'Start a new chat'}
+              {selectedAnalysis ? `Chat about score ${selectedScore}` : 'Select an analysis to chat'}
             </span>
           </button>
           {selectedAnalysis && (
