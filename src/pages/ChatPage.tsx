@@ -168,12 +168,15 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                   Get personalized insights, ask questions about your score, and receive expert advice on improving your facial aesthetics.
                 </p>
               </div>
-              <div className="w-full flex flex-row gap-3 mt-2">
+              <div className="w-full flex flex-row gap-3 mt-2 px-2">
                 {SUGGESTIONS.map(s => (
                   <button
                     key={s}
                     onClick={() => handleSend(s)}
-                    className="flex-1 px-4 py-5 bg-gradient-to-b from-sky-400 to-blue-600 hover:from-sky-300 hover:to-blue-500 rounded-2xl text-center text-sm text-white font-semibold transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95"
+                    className="flex-1 px-3 py-8 bg-[#0a0f1a] border border-black rounded-2xl text-center text-sm text-white font-semibold transition-all duration-200 active:scale-95 hover:border-cyan-500/40"
+                    style={{
+                      boxShadow: '0 0 18px 2px rgba(34,211,238,0.07), inset 0 0 24px 0px rgba(56,189,248,0.05)',
+                    }}
                   >
                     {s}
                   </button>
