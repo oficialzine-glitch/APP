@@ -97,11 +97,11 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const userInitial = user?.email?.[0]?.toUpperCase() ?? 'U';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1e] via-[#0d1528] to-[#080d18] flex flex-col">
+    <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-gradient-to-r from-[#0a0f1e]/90 to-[#0d1528]/90 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#111111]">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
@@ -139,7 +139,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-6 pt-8">
-              <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 32px 8px rgba(34,211,238,0.25)' }}>
+              <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 20px 4px rgba(34,211,238,0.12)' }}>
                 {analysisImageUrl ? (
                   <img src={analysisImageUrl} alt="Analysis" className="w-full h-full object-cover" />
                 ) : (
@@ -182,7 +182,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                       className={`px-5 py-3.5 rounded-3xl text-[15px] leading-relaxed whitespace-pre-wrap break-words ${
                         message.role === 'user'
                           ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 rounded-br-md'
-                          : 'bg-[#111d35] text-white border border-cyan-400/15 rounded-bl-md'
+                          : 'bg-[#161616] text-white border border-cyan-500/10 rounded-bl-md'
                       }`}
                     >
                       {message.content}
@@ -219,7 +219,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/20">
                     <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
                   </div>
-                  <div className="bg-[#111d35] border border-cyan-400/15 rounded-3xl rounded-bl-md px-5 py-4">
+                  <div className="bg-[#161616] border border-cyan-500/10 rounded-3xl rounded-bl-md px-5 py-4">
                     <div className="flex gap-1.5 items-center">
                       <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <div className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -235,13 +235,13 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         </div>
 
         {/* Input bar */}
-        <div className="px-4 pt-3 pb-5 bg-gradient-to-r from-[#0a0f1e]/95 to-[#0d1528]/95 border-t border-cyan-400/15 backdrop-blur-sm">
+        <div className="px-4 pt-3 pb-5 bg-[#0d0d0d] border-t border-white/5">
           <div className="flex items-end gap-2">
             <button className="p-2.5 rounded-full hover:bg-white/8 transition-colors flex-shrink-0 mb-1">
               <Plus className="w-5 h-5 text-slate-400" />
             </button>
 
-            <div className="flex-1 bg-[#111d35] border border-cyan-400/20 rounded-3xl px-4 py-3 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/25 transition-all">
+            <div className="flex-1 bg-[#1c1c1e] border border-white/8 rounded-3xl px-4 py-3 focus-within:border-cyan-500/40 focus-within:ring-1 focus-within:ring-cyan-500/20 transition-all">
               <textarea
                 ref={textareaRef}
                 value={inputValue}
