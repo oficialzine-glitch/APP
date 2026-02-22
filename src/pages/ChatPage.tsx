@@ -18,9 +18,8 @@ interface ChatPageProps {
 }
 
 const SUGGESTIONS = [
-  { text: 'What does my score mean?', gradient: 'from-cyan-500/20 to-blue-600/20', border: 'border-cyan-500/30', hover: 'hover:border-cyan-400/50 hover:from-cyan-500/30 hover:to-blue-600/30' },
-  { text: 'How can I improve my results?', gradient: 'from-blue-500/20 to-sky-600/20', border: 'border-blue-500/30', hover: 'hover:border-blue-400/50 hover:from-blue-500/30 hover:to-sky-600/30' },
-  { text: 'What are my strongest features?', gradient: 'from-sky-500/20 to-cyan-600/20', border: 'border-sky-500/30', hover: 'hover:border-sky-400/50 hover:from-sky-500/30 hover:to-cyan-600/30' },
+  'How can I improve my results?',
+  'What are my strongest features?',
 ];
 
 export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPageProps) {
@@ -140,14 +139,14 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                   Get personalized insights, ask questions about your score, and receive expert advice on improving your facial aesthetics.
                 </p>
               </div>
-              <div className="w-full flex flex-col gap-2 mt-2">
+              <div className="w-full flex flex-row gap-3 mt-2">
                 {SUGGESTIONS.map(s => (
                   <button
-                    key={s.text}
-                    onClick={() => handleSend(s.text)}
-                    className={`w-full px-4 py-2.5 bg-gradient-to-r ${s.gradient} ${s.hover} border ${s.border} rounded-xl text-left text-sm text-white/80 hover:text-white transition-all duration-200 font-medium`}
+                    key={s}
+                    onClick={() => handleSend(s)}
+                    className="flex-1 px-4 py-5 bg-gradient-to-b from-sky-400 to-blue-600 hover:from-sky-300 hover:to-blue-500 rounded-2xl text-center text-sm text-white font-semibold transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95"
                   >
-                    {s.text}
+                    {s}
                   </button>
                 ))}
               </div>
