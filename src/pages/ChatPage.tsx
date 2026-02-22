@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Loader2, Copy, ThumbsUp, Volume2, MoreVertical, Plus, RefreshCw, Mic } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { saveChatMessage } from '../lib/chat';
 
 interface ChatMessage {
   id: string;
@@ -57,15 +58,24 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
     setMessages(prev => [...prev, userMsg]);
     setSending(true);
 
+    if (user && analysisId) {
+      saveChatMessage(user.id, analysisId, 'user', content);
+    }
+
     setTimeout(() => {
+      const aiResponse = 'This is a placeholder response. AI integration coming soon!';
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'This is a placeholder response. AI integration coming soon!',
+        content: aiResponse,
         created_at: new Date().toISOString(),
       };
       setMessages(prev => [...prev, aiMsg]);
       setSending(false);
+
+      if (user && analysisId) {
+        saveChatMessage(user.id, analysisId, 'assistant', aiResponse);
+      }
     }, 1200);
   };
 
