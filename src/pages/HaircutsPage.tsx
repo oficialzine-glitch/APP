@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   Search, ChevronRight, Sparkles, Dumbbell, Heart,
   Brain, Palette, Camera, Zap, MessageCircle, ScanFace,
-  Clock, Star, X
+  Clock, MessageSquare, Loader2
 } from 'lucide-react';
 import { getHistory, AnalysisRow } from '../lib/history';
 import { useAuth } from '../contexts/AuthContext';
+import { getChatMessages, ChatMessageRow } from '../lib/chat';
 
 interface HaircutsPageProps {
   onBack: () => void;
@@ -99,12 +100,23 @@ function getScoreBg(score: number) {
   return 'from-blue-500 to-sky-600';
 }
 
+interface PreviousChatEntry {
+  analysisId: string;
+  analysisScore: number;
+  imageUrl: string | null;
+  firstMessage: string;
+  messageCount: number;
+  lastDate: string;
+}
+
 export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageProps) {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loadingAnalyses, setLoadingAnalyses] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
+  const [previousChatEntries, setPreviousChatEntries] = useState<PreviousChatEntry[]>([]);
+  const [loadingChats, setLoadingChats] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -113,6 +125,34 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
       if (ok && data) setAnalyses(data);
     }).finally(() => setLoadingAnalyses(false));
   }, [user]);
+
+  useEffect(() => {
+    if (!user || analyses.length === 0) return;
+    setLoadingChats(true);
+    Promise.all(
+      analyses.map(row =>
+        getChatMessages(user.id, row.id).then(msgs => ({ row, msgs }))
+      )
+    ).then(results => {
+      const entries: PreviousChatEntry[] = results
+        .filter(({ msgs }) => msgs.length > 0)
+        .map(({ row, msgs }) => {
+          const firstUser = msgs.find(m => m.role === 'user');
+          const preview = firstUser ? firstUser.content : msgs[0].content;
+          const lastMsg = msgs[msgs.length - 1];
+          return {
+            analysisId: row.id,
+            analysisScore: row.overall_score ?? row.analysis?.overall ?? 0,
+            imageUrl: row.image_url ?? null,
+            firstMessage: preview,
+            messageCount: msgs.length,
+            lastDate: lastMsg.created_at,
+          };
+        })
+        .sort((a, b) => new Date(b.lastDate).getTime() - new Date(a.lastDate).getTime());
+      setPreviousChatEntries(entries);
+    }).finally(() => setLoadingChats(false));
+  }, [user, analyses]);
 
   const filteredTopics = staticTopics.filter(
     t =>
@@ -259,6 +299,57 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
             </p>
           )}
         </div>
+
+        {/* Previous Chats */}
+        {user && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquare className="w-4 h-4 text-slate-400" />
+              <h3 className="text-white font-semibold text-base">Previous chats</h3>
+            </div>
+
+            {loadingChats ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="w-5 h-5 text-slate-500 animate-spin" />
+              </div>
+            ) : previousChatEntries.length === 0 ? (
+              <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl px-4 py-5 text-center">
+                <MessageSquare className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <p className="text-slate-500 text-sm">No previous chats yet</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {previousChatEntries.map(entry => {
+                  const dateLabel = new Date(entry.lastDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                  return (
+                    <button
+                      key={entry.analysisId}
+                      onClick={() => onNavigateToChat && onNavigateToChat(entry.analysisId, entry.analysisScore)}
+                      className="w-full flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl hover:border-cyan-500/40 hover:bg-slate-800/70 transition-all duration-200 text-left group"
+                    >
+                      <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-slate-700/60">
+                        {entry.imageUrl ? (
+                          <img src={entry.imageUrl} alt="analysis" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ScanFace className="w-5 h-5 text-slate-500" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm font-medium truncate">{entry.firstMessage}</p>
+                        <p className="text-slate-500 text-xs mt-0.5">
+                          Score {entry.analysisScore} · {dateLabel} · {entry.messageCount} message{entry.messageCount !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 flex-shrink-0 transition-colors" />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Footer badge */}
         <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Loader2, Copy, ThumbsUp, Volume2, MoreVertical, Plus, RefreshCw, Mic, MessageSquare, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, Copy, ThumbsUp, Volume2, MoreVertical, Plus, RefreshCw, Mic } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { saveChatMessage, getChatMessages, ChatMessageRow } from '../lib/chat';
+import { saveChatMessage } from '../lib/chat';
 import { supabase } from '../lib/supabaseClient';
 
 interface ChatMessage {
@@ -24,8 +24,6 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const [inputValue, setInputValue] = useState('');
   const [sending, setSending] = useState(false);
   const [analysisImageUrl, setAnalysisImageUrl] = useState<string | null>(null);
-  const [previousChats, setPreviousChats] = useState<ChatMessageRow[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -40,15 +38,6 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
         if (data?.image_url) setAnalysisImageUrl(data.image_url);
       });
   }, [analysisId]);
-
-  useEffect(() => {
-    if (!user || !analysisId) return;
-    setLoadingHistory(true);
-    getChatMessages(user.id, analysisId).then(rows => {
-      setPreviousChats(rows);
-      setLoadingHistory(false);
-    });
-  }, [user, analysisId]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -107,23 +96,6 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   };
 
   const userInitial = user?.email?.[0]?.toUpperCase() ?? 'U';
-
-  const loadPreviousConversation = () => {
-    const converted: ChatMessage[] = previousChats.map(row => ({
-      id: row.id,
-      role: row.role,
-      content: row.content,
-      created_at: row.created_at,
-    }));
-    setMessages(converted);
-  };
-
-  const groupedByDate = previousChats.reduce<Record<string, ChatMessageRow[]>>((acc, msg) => {
-    const date = new Date(msg.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(msg);
-    return acc;
-  }, {});
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(ellipse 100% 60% at 50% 35%, rgba(14,90,190,0.22) 0%, transparent 65%), #0d0d0d' }}>
@@ -191,48 +163,6 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                 <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
                   Get personalized insights, ask questions about your score, and receive expert advice on improving your facial aesthetics.
                 </p>
-              </div>
-
-              {/* Previous Chats */}
-              <div className="w-full px-2 mt-2">
-                <div className="flex items-center gap-2 mb-3 px-1">
-                  <MessageSquare className="w-4 h-4 text-slate-400" />
-                  <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Previous Chats</h3>
-                </div>
-
-                {loadingHistory ? (
-                  <div className="flex items-center justify-center py-6">
-                    <Loader2 className="w-5 h-5 text-slate-500 animate-spin" />
-                  </div>
-                ) : Object.keys(groupedByDate).length === 0 ? (
-                  <div className="text-center py-6">
-                    <p className="text-slate-600 text-sm">No previous chats for this analysis</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {Object.entries(groupedByDate).map(([date, msgs]) => {
-                      const firstUser = msgs.find(m => m.role === 'user');
-                      const preview = firstUser ? firstUser.content : msgs[0].content;
-                      const msgCount = msgs.length;
-                      return (
-                        <button
-                          key={date}
-                          onClick={loadPreviousConversation}
-                          className="w-full flex items-center gap-3 p-4 bg-[#161616] border border-white/6 rounded-2xl hover:border-cyan-500/30 hover:bg-[#1a1a1a] transition-all duration-200 text-left group"
-                        >
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                            <MessageSquare className="w-4 h-4 text-cyan-400" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white text-sm font-medium truncate">{preview}</p>
-                            <p className="text-slate-500 text-xs mt-0.5">{date} · {msgCount} message{msgCount !== 1 ? 's' : ''}</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 flex-shrink-0 transition-colors" />
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
             </div>
           ) : (
