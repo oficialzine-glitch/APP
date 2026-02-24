@@ -97,15 +97,25 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setSending(true);
 
-    const { error } = await supabase.from('chat_messages').insert({
+    const { error: insertError } = await supabase.from('chat_messages').insert({
       role: 'user',
       content,
       user_id: user.id,
       analysis_id: analysisId,
     });
 
-    if (error) {
-      console.error('Failed to send message:', error);
+    if (insertError) {
+      console.error('Failed to send message:', insertError);
+      setSending(false);
+      return;
+    }
+
+    const { error: fnError } = await supabase.functions.invoke('gptmini-chat', {
+      body: { analysisId, message: content },
+    });
+
+    if (fnError) {
+      console.error('Failed to get AI response:', fnError);
       setSending(false);
     }
   };

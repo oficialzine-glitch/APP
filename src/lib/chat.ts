@@ -34,7 +34,6 @@ export async function getChatMessages(
   const { data, error } = await supabase
     .from('chat_messages')
     .select('id, user_id, analysis_id, role, content, created_at')
-    .eq('user_id', userId)
     .eq('analysis_id', analysisId)
     .order('created_at', { ascending: true });
 
