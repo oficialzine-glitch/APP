@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Loader2, Copy, ThumbsUp, Volume2, MoreVertical, Plus, RefreshCw, Mic } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { saveChatMessage } from '../lib/chat';
 import { supabase } from '../lib/supabaseClient';
+import { getChatMessages } from '../lib/chat';
 
 interface ChatMessage {
   id: string;
@@ -18,7 +17,6 @@ interface ChatPageProps {
   analysisScore?: number;
 }
 
-
 export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPageProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -26,6 +24,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const [analysisImageUrl, setAnalysisImageUrl] = useState<string | null>(null);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!analysisId) return;
@@ -39,7 +38,45 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       });
   }, [analysisId]);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!analysisId || !user) return;
+
+    getChatMessages(user.id, analysisId).then(rows => {
+      setMessages(rows.map(r => ({
+        id: r.id,
+        role: r.role,
+        content: r.content,
+        created_at: r.created_at,
+      })));
+    });
+
+    const channel = supabase
+      .channel(`chat_messages:${analysisId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `analysis_id=eq.${analysisId}`,
+        },
+        (payload) => {
+          const row = payload.new as ChatMessage;
+          setMessages(prev => {
+            if (prev.some(m => m.id === row.id)) return prev;
+            return [...prev, row];
+          });
+          if (row.role === 'assistant') {
+            setSending(false);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [analysisId, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,38 +91,23 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
 
   const handleSend = async (text?: string) => {
     const content = (text ?? inputValue).trim();
-    if (!content || sending) return;
+    if (!content || sending || !user || !analysisId) return;
+
     setInputValue('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      created_at: new Date().toISOString(),
-    };
-    setMessages(prev => [...prev, userMsg]);
     setSending(true);
 
-    if (user && analysisId) {
-      saveChatMessage(user.id, analysisId, 'user', content);
-    }
+    const { error } = await supabase.from('chat_messages').insert({
+      role: 'user',
+      content,
+      user_id: user.id,
+      analysis_id: analysisId,
+    });
 
-    setTimeout(() => {
-      const aiResponse = 'This is a placeholder response. AI integration coming soon!';
-      const aiMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: aiResponse,
-        created_at: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, aiMsg]);
+    if (error) {
+      console.error('Failed to send message:', error);
       setSending(false);
-
-      if (user && analysisId) {
-        saveChatMessage(user.id, analysisId, 'assistant', aiResponse);
-      }
-    }, 1200);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
