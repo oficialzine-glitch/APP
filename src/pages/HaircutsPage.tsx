@@ -117,6 +117,7 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
   const [previousChatEntries, setPreviousChatEntries] = useState<PreviousChatEntry[]>([]);
   const [loadingChats, setLoadingChats] = useState(false);
+  const [duplicateWarning, setDuplicateWarning] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -162,7 +163,18 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
   );
 
   const handleSelectAnalysis = (row: AnalysisRow) => {
+    setDuplicateWarning(false);
     setSelectedAnalysis(prev => prev?.id === row.id ? null : row);
+  };
+
+  const handleStartChat = () => {
+    if (!selectedAnalysis || !onNavigateToChat) return;
+    const hasExisting = previousChatEntries.some(e => e.analysisId === selectedAnalysis.id);
+    if (hasExisting) {
+      setDuplicateWarning(true);
+      return;
+    }
+    onNavigateToChat(selectedAnalysis.id, selectedScore || undefined);
   };
 
   const selectedScore = selectedAnalysis
@@ -279,11 +291,7 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
         {/* Start chat CTA */}
         <div className="mb-8">
           <button
-            onClick={() => {
-              if (selectedAnalysis && onNavigateToChat) {
-                onNavigateToChat(selectedAnalysis.id, selectedScore || undefined);
-              }
-            }}
+            onClick={handleStartChat}
             disabled={!selectedAnalysis}
             className="w-full relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
@@ -293,7 +301,15 @@ export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageP
               {selectedAnalysis ? `Chat about score ${selectedScore}` : 'Select an analysis to chat'}
             </span>
           </button>
-          {selectedAnalysis && (
+          {duplicateWarning && (
+            <div className="mt-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3 flex items-start gap-3">
+              <MessageSquare className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-300 text-sm leading-snug">
+                You already have an ongoing conversation about this analysis. Pick it from the <span className="font-semibold">Previous chats</span> section below.
+              </p>
+            </div>
+          )}
+          {selectedAnalysis && !duplicateWarning && (
             <p className="text-center text-slate-500 text-xs mt-2">
               The AI will receive your full analysis as context
             </p>
