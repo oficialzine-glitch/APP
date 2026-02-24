@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scan, History, User, Crown, Sparkles, BarChart3, Scissors } from 'lucide-react';
+import { supabase } from './lib/supabaseClient';
 import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
 import ProfilePage from './pages/ProfilePage';
@@ -31,7 +32,25 @@ function App() {
   const [showCreatorCodeModal, setShowCreatorCodeModal] = useState(false);
   const [logoTapCount, setLogoTapCount] = useState(0);
   const [logoTapTimer, setLogoTapTimer] = useState<NodeJS.Timeout | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!user) { setAvatarUrl(null); return; }
+    supabase
+      .from('profiles')
+      .select('avatar_path')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.avatar_path) {
+          const { data: pub } = supabase.storage.from('avatars').getPublicUrl(data.avatar_path);
+          setAvatarUrl(pub?.publicUrl ?? null);
+        } else {
+          setAvatarUrl(null);
+        }
+      });
+  }, [user]);
   const { t } = useLanguage();
 
   // Redirect authenticated users from intro/onboarding/auth pages to analysis
@@ -160,14 +179,31 @@ function App() {
           </div>
           
           {/* Top Right Buttons */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             {/* Premium Button */}
             <button
               onClick={() => setShowPremiumModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-sm rounded-full shadow-lg shadow-yellow-500/25 hover:shadow-yellow-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center space-x-2"
+              className="px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-sm rounded-full shadow-lg shadow-yellow-500/25 hover:shadow-yellow-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-1.5"
             >
               <Crown className="w-4 h-4" />
               <span>Premium</span>
+            </button>
+            {/* Profile Avatar Button */}
+            <button
+              onClick={() => handlePageChange('profile')}
+              className={`w-9 h-9 rounded-full overflow-hidden border-2 transition-all duration-200 hover:scale-105 active:scale-95 flex-shrink-0 ${
+                currentPage === 'profile'
+                  ? 'border-cyan-400 shadow-lg shadow-cyan-500/30'
+                  : 'border-slate-600 hover:border-slate-400'
+              }`}
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                  <User className="w-4 h-4 text-slate-300" />
+                </div>
+              )}
             </button>
           </div>
         </div>
@@ -182,6 +218,17 @@ function App() {
           <div className="max-w-md mx-auto px-2">
             <div className="flex justify-center">
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-0.5 border border-slate-700/50 flex items-center gap-0.5">
+                <button
+                  onClick={() => handlePageChange('analysis')}
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
+                    currentPage === 'analysis' || currentPage === 'home'
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Scan className="w-4 h-4" />
+                  <span className="whitespace-nowrap">Analysis</span>
+                </button>
                 <button
                   onClick={() => handlePageChange('glowup-map')}
                   className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
@@ -205,16 +252,6 @@ function App() {
                   <span className="whitespace-nowrap">{t.haircuts}</span>
                 </button>
                 <button
-                  onClick={() => handlePageChange('analysis')}
-                  className={`p-3 rounded-full transition-all duration-300 flex items-center justify-center -mt-6 ${
-                    currentPage === 'analysis' || currentPage === 'home'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50 scale-110'
-                      : 'bg-slate-700 text-slate-300 hover:text-white hover:bg-slate-600'
-                  }`}
-                >
-                  <Scan className="w-6 h-6" />
-                </button>
-                <button
                   onClick={() => handlePageChange('results')}
                   className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
                     currentPage === 'results'
@@ -224,17 +261,6 @@ function App() {
                 >
                   <History className="w-4 h-4" />
                   <span className="whitespace-nowrap">{t.results}</span>
-                </button>
-                <button
-                  onClick={() => handlePageChange('profile')}
-                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-all duration-300 flex items-center gap-1 ${
-                    currentPage === 'profile'
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  <User className="w-4 h-4" />
-                  <span className="whitespace-nowrap">{t.profile}</span>
                 </button>
               </div>
             </div>
