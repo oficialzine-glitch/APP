@@ -1,1 +1,0 @@
-the bolt ai assistant doesnt have permission to touch the .env file under ANY condition. the ai assistant can NEVER modify or create the database. his work is purely coding, as the human user will take the database work and set it up himself. bolt can only connect with it by coding.
