@@ -97,7 +97,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
   const userInitial = user?.email?.[0]?.toUpperCase() ?? 'U';
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(ellipse 100% 60% at 50% 35%, rgba(14,90,190,0.14) 0%, transparent 65%), #0d0d0d' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(ellipse 100% 60% at 50% 35%, rgba(14,90,190,0.22) 0%, transparent 65%), #0d0d0d' }}>
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full">
 
         {/* Header */}
