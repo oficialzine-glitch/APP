@@ -97,6 +97,8 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setSending(true);
 
+    const timeout = setTimeout(() => setSending(false), 30000);
+
     const { error: insertError } = await supabase.from('chat_messages').insert({
       role: 'user',
       content,
@@ -106,6 +108,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
 
     if (insertError) {
       console.error('Failed to send message:', insertError);
+      clearTimeout(timeout);
       setSending(false);
       return;
     }
@@ -116,6 +119,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
 
     if (fnError) {
       console.error('Failed to get AI response:', fnError);
+      clearTimeout(timeout);
       setSending(false);
     }
   };
@@ -170,7 +174,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
-          {messages.length === 0 ? (
+          {messages.length === 0 && !sending && (
             <div className="flex flex-col items-center w-full gap-6 pt-8">
               <div className="relative w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 0 20px 4px rgba(34,211,238,0.12)' }}>
                 {analysisImageUrl ? (
@@ -197,7 +201,8 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
                 </p>
               </div>
             </div>
-          ) : (
+          )}
+          {(messages.length > 0 || sending) && (
             <>
               {messages.map((message) => (
                 <div

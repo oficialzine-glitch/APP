@@ -63,19 +63,19 @@ Deno.serve(async (req: Request) => {
       .order("created_at", { ascending: true })
       .limit(20);
 
-    const scores = analysis.scores ?? {};
-    const systemPrompt = `You are NextFace AI, an expert facial aesthetics consultant. You are analyzing a face with the following scores:
+    const analysisItems: Array<{ score: number; category: string; feedback: string }> =
+      Array.isArray(analysis.analysis) ? analysis.analysis : [];
 
-Overall Score: ${scores.overall ?? "N/A"}/100
-Jawline: ${scores.jawline ?? "N/A"}/100
-Cheekbones: ${scores.cheekbones ?? "N/A"}/100
-Eye Area: ${scores.eyeArea ?? "N/A"}/100
-Skin: ${scores.skin ?? "N/A"}/100
-Symmetry: ${scores.symmetry ?? "N/A"}/100
-Attractiveness: ${scores.attractiveness ?? "N/A"}/100
-Face Shape: ${scores.faceShape ?? analysis.face_shape ?? "N/A"}
-Estimated Age: ${scores.age ?? "N/A"}
-Percentile: ${scores.percentile ?? "N/A"}th
+    const scoresText = analysisItems.length > 0
+      ? analysisItems.map(item => `${item.category}: ${item.score}/10`).join("\n")
+      : "No individual scores available";
+
+    const overallScore = analysis.overall_score ?? "N/A";
+
+    const systemPrompt = `You are NextFace AI, an expert facial aesthetics consultant. You are analyzing a face with the following scores (out of 10):
+
+Overall Score: ${overallScore}/10
+${scoresText}
 
 Provide personalized, specific, and actionable advice about the user's facial aesthetics. Be warm, encouraging, and professional. Keep responses concise (2-4 sentences). Focus on practical improvements and honest assessment.`;
 
