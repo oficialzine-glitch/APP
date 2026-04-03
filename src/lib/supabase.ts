@@ -1,21 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { readEnv } from "./envDebug";
 
-const { url, anon, ok } = readEnv();
+const SUPABASE_URL = "https://hebwatwkpszebonmrige.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhlYndhdHdrcHN6ZWJvbm1yaWdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMjkyNzQsImV4cCI6MjA3MDgwNTI3NH0.8nzmRDHCn5Z8deJ5hHOAeSf4K80GkzXd-sisVLikE64";
 
-// Simple console hints so we SEE what the app read from .env
-console.log("SUPABASE_URL =", url || "(empty)");
-console.log("SUPABASE_KEY starts with =", (anon || "").slice(0, 10) || "(empty)");
-
-if (!ok) {
-  // Fail fast with a friendly error if envs look wrong
-  throw new Error("Missing or invalid Supabase .env values. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
-}
-
-export const supabase = createClient(url, anon, {
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true, // 🔴 THIS MUST BE TRUE
+    detectSessionInUrl: true,
   },
 });
