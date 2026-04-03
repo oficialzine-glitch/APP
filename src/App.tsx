@@ -28,6 +28,7 @@ function App() {
   const [analysisData, setAnalysisData] = useState<FacialAnalysis | null>(null);
   const [chatAnalysisId, setChatAnalysisId] = useState<string>('');
   const [chatAnalysisScore, setChatAnalysisScore] = useState<number | undefined>(undefined);
+  const [chatReturnPage, setChatReturnPage] = useState<PageType>('haircuts');
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showCreatorCodeModal, setShowCreatorCodeModal] = useState(false);
   const [logoTapCount, setLogoTapCount] = useState(0);
@@ -102,9 +103,10 @@ function App() {
     }, 150);
   };
 
-  const handleNavigateToChat = (analysisId: string, score?: number) => {
+  const handleNavigateToChat = (analysisId: string, score?: number, returnPage?: PageType) => {
     setChatAnalysisId(analysisId);
     setChatAnalysisScore(score);
+    setChatReturnPage(returnPage ?? currentPage as PageType);
     handlePageChange('chat');
   };
 
@@ -152,7 +154,7 @@ function App() {
       case 'haircuts':
         return <HaircutsPage onBack={() => setCurrentPage('home')} onNavigateToChat={handleNavigateToChat} />;
       case 'chat':
-        return <ChatPage onBack={() => setCurrentPage('haircuts')} analysisId={chatAnalysisId} analysisScore={chatAnalysisScore} />;
+        return <ChatPage onBack={() => handlePageChange(chatReturnPage)} analysisId={chatAnalysisId} analysisScore={chatAnalysisScore} />;
       default:
         return <HomePage onNavigate={setCurrentPage} />;
     }
