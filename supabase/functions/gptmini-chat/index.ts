@@ -63,11 +63,11 @@ Deno.serve(async (req: Request) => {
       .order("created_at", { ascending: true })
       .limit(20);
 
-    const analysisItems: Array<{ score: number; category: string; feedback: string }> =
-      Array.isArray(analysis.analysis) ? analysis.analysis : [];
+    const analysisItems: Array<{ score: number; label: string }> =
+      Array.isArray(analysis.analysis?.scores) ? analysis.analysis.scores : [];
 
     const scoresText = analysisItems.length > 0
-      ? analysisItems.map(item => `${item.category}: ${item.score}/10`).join("\n")
+      ? analysisItems.map(item => `${item.label}: ${item.score}/10`).join("\n")
       : "No individual scores available";
 
     const overallScore = analysis.overall_score ?? "N/A";
