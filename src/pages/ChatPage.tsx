@@ -113,6 +113,11 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       return;
     }
 
+    supabase
+      .from('facial_profiles')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('user_id', user.id);
+
     const { error: fnError } = await supabase.functions.invoke('gptmini-chat', {
       body: { analysisId, message: content },
     });

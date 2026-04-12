@@ -37,6 +37,15 @@ function App() {
   const { user, loading } = useAuth();
 
   useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('facial_profiles')
+        .update({ last_active_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
     if (!user) { setAvatarUrl(null); return; }
     supabase
       .from('profiles')

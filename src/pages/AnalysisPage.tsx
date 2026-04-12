@@ -88,6 +88,10 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
           });
           if (saveResult.ok) {
             console.log('Analysis saved to history successfully');
+            supabase
+              .from('facial_profiles')
+              .update({ last_active_at: new Date().toISOString() })
+              .eq('user_id', user.id);
           } else {
             console.error('Failed to save analysis:', saveResult.error);
           }
