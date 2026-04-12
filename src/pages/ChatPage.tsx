@@ -113,11 +113,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       return;
     }
 
-    supabase
-      .from('facial_profiles')
-      .update({ last_active_at: new Date().toISOString() })
-      .eq('user_id', user.id);
-
+    console.log("USER ID:", user?.id);
     const { error: fnError } = await supabase.functions.invoke('gptmini-chat', {
       body: { analysisId, message: content },
     });
@@ -126,6 +122,15 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       console.error('Failed to get AI response:', fnError);
       clearTimeout(timeout);
       setSending(false);
+    }
+
+    if (user?.id) {
+      supabase
+        .from("facial_profiles")
+        .update({ last_active_at: new Date().toISOString() })
+        .eq("user_id", user.id)
+        .then(() => console.log("last_active_at updated"))
+        .catch(err => console.error("update failed", err));
     }
   };
 

@@ -91,7 +91,9 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
             supabase
               .from('facial_profiles')
               .update({ last_active_at: new Date().toISOString() })
-              .eq('user_id', user.id);
+              .eq('user_id', user.id)
+              .then(() => console.log("last_active_at updated"))
+              .catch(err => console.error("update failed", err));
           } else {
             console.error('Failed to save analysis:', saveResult.error);
           }
