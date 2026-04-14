@@ -80,6 +80,13 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
       const result = await analyzeImage(file);
 
       if (result && user) {
+        supabase
+          .from('facial_profiles')
+          .update({ last_active_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .then(() => console.log("last_active_at updated"))
+          .catch(err => console.error("update failed", err));
+
         try {
           const saveResult = await saveAnalysis({
             userId: user.id,
@@ -88,12 +95,6 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
           });
           if (saveResult.ok) {
             console.log('Analysis saved to history successfully');
-            supabase
-              .from('facial_profiles')
-              .update({ last_active_at: new Date().toISOString() })
-              .eq('user_id', user.id)
-              .then(() => console.log("last_active_at updated"))
-              .catch(err => console.error("update failed", err));
           } else {
             console.error('Failed to save analysis:', saveResult.error);
           }
