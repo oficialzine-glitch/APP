@@ -5,6 +5,7 @@ import GradientButton from '../components/GradientButton';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useActivityTracker } from '../hooks/useActivityTracker';
 
 interface HomePageProps {
   onNavigate: (page: 'analysis' | 'hairstyles' | 'results' | 'profile' | 'auth' | 'upload') => void;
@@ -18,6 +19,9 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
   const { user } = useAuth();
+  const { updateLastActive } = useActivityTracker();
+
+  useEffect(() => { updateLastActive(); }, []);
 
   const calculatePercentile = (score: number): number => {
     if (score >= 1 && score <= 10) return 1;

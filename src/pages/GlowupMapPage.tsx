@@ -3,6 +3,7 @@ import { User, RefreshCw, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getHistory, AnalysisRow } from '../lib/history';
 import { supabase } from '../lib/supabaseClient';
+import { useActivityTracker } from '../hooks/useActivityTracker';
 
 // Local storage key for persisting glowup map state
 const GLOWUP_MAP_STORAGE_KEY = 'glowup_map_state';
@@ -58,7 +59,10 @@ interface GlowupMapPageProps {
 
 export default function GlowupMapPage({ onBack }: GlowupMapPageProps) {
   const { user } = useAuth();
-  
+  const { updateLastActive } = useActivityTracker();
+
+  useEffect(() => { updateLastActive(); }, []);
+
   // State
   const [loading, setLoading] = useState(true);
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);

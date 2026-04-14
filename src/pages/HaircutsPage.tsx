@@ -7,6 +7,7 @@ import {
 import { getHistory, AnalysisRow } from '../lib/history';
 import { useAuth } from '../contexts/AuthContext';
 import { getChatMessages, ChatMessageRow } from '../lib/chat';
+import { useActivityTracker } from '../hooks/useActivityTracker';
 
 interface HaircutsPageProps {
   onBack: () => void;
@@ -111,12 +112,15 @@ interface PreviousChatEntry {
 
 export default function HaircutsPage({ onBack, onNavigateToChat }: HaircutsPageProps) {
   const { user } = useAuth();
+  const { updateLastActive } = useActivityTracker();
   const [search, setSearch] = useState('');
   const [analyses, setAnalyses] = useState<AnalysisRow[]>([]);
   const [loadingAnalyses, setLoadingAnalyses] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRow | null>(null);
   const [previousChatEntries, setPreviousChatEntries] = useState<PreviousChatEntry[]>([]);
   const [loadingChats, setLoadingChats] = useState(false);
+
+  useEffect(() => { updateLastActive(); }, []);
 
   useEffect(() => {
     if (!user) return;

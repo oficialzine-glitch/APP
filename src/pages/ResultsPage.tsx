@@ -7,6 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import PremiumModal from '../components/PremiumModal';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useActivityTracker } from '../hooks/useActivityTracker';
 
 interface ResultsPageProps {
   onNavigate: (page: string, analysisData?: FacialAnalysis) => void;
@@ -19,6 +20,9 @@ export default function ResultsPage({ onNavigate }: ResultsPageProps) {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const { t } = useLanguage();
   const { user, isPremium } = useAuth();
+  const { updateLastActive } = useActivityTracker();
+
+  useEffect(() => { updateLastActive(); }, []);
 
   useEffect(() => {
     loadAnalyses();

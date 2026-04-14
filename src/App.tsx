@@ -19,6 +19,7 @@ import CreatorCodeModal from './components/CreatorCodeModal';
 import { FacialAnalysis } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
+import { useActivityTracker } from './hooks/useActivityTracker';
 
 type PageType = 'intro' | 'onboarding' | 'home' | 'analysis' | 'upload' | 'results' | 'profile' | 'auth' | 'analysis-view' | 'previous-analyses' | 'glowup-map' | 'haircuts' | 'chat';
 
@@ -35,6 +36,7 @@ function App() {
   const [logoTapTimer, setLogoTapTimer] = useState<NodeJS.Timeout | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const { user, loading } = useAuth();
+  const { updateLastActive } = useActivityTracker();
 
   useEffect(() => {
     console.log("USER ID:", user?.id);
@@ -43,10 +45,14 @@ function App() {
         .from('facial_profiles')
         .update({ last_active_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .then(() => console.log("last_active_at updated"))
+        .then(() => console.log("last_active_at updated on login"))
         .catch(err => console.error("update failed", err));
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    updateLastActive();
+  }, [currentPage]);
 
   useEffect(() => {
     if (!user) { setAvatarUrl(null); return; }
@@ -108,6 +114,7 @@ function App() {
   };
 
   const handlePageChange = (page: PageType) => {
+    updateLastActive();
     setPageTransition(true);
     setTimeout(() => {
       setCurrentPage(page);
