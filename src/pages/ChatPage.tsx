@@ -50,7 +50,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       })));
     });
 
-    console.log('Subscribing with analysisId:', analysisId);
+    console.log("SUBSCRIBED TO:", analysisId);
 
     const channel = supabase
       .channel(`chat_messages:${analysisId}`)
@@ -63,26 +63,9 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
           filter: `analysis_id=eq.${analysisId}`,
         },
         (payload) => {
-          console.log('REALTIME EVENT RECEIVED:', payload);
+          console.log("REALTIME EVENT RECEIVED:", payload);
           const row = payload.new as ChatMessage;
-          console.log('NEW ROW:', row);
-          setMessages(prev => {
-            if (prev.some(m => m.id === row.id)) return prev;
-            if (row.role === 'user') {
-              const tempIndex = prev.findIndex(
-                m => m.id.startsWith('temp-') && m.role === 'user' && m.content === row.content
-              );
-              if (tempIndex !== -1) {
-                const next = [...prev];
-                next[tempIndex] = row;
-                return next;
-              }
-            }
-            return [...prev, row];
-          });
-          if (row.role === 'assistant') {
-            setSending(false);
-          }
+          setMessages(prev => [...prev, row]);
         }
       )
       .subscribe((status) => {
