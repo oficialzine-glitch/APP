@@ -113,6 +113,16 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
       return;
     }
 
+    try {
+      await supabase.from('user_events').insert({
+        user_id: user.id,
+        event_type: 'chat_message_sent',
+        metadata: { analysis_id: analysisId }
+      });
+    } catch (e) {
+      console.error('Failed to log chat_message_sent event:', e);
+    }
+
     console.log("USER ID:", user?.id);
     const { error: fnError } = await supabase.functions.invoke('gptmini-chat', {
       body: { analysisId, message: content },

@@ -95,6 +95,18 @@ export default function AnalysisPage({ onBack, onNavigate }: AnalysisPageProps) 
           });
           if (saveResult.ok) {
             console.log('Analysis saved to history successfully');
+            try {
+              await supabase.from('user_events').insert({
+                user_id: user.id,
+                event_type: 'analysis_completed',
+                metadata: {
+                  analysis_id: saveResult.analysisId,
+                  score: result.overallScore
+                }
+              });
+            } catch (e) {
+              console.error('Failed to log analysis_completed event:', e);
+            }
           } else {
             console.error('Failed to save analysis:', saveResult.error);
           }

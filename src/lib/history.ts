@@ -24,14 +24,17 @@ export async function saveAnalysis(opts: { userId: string; imageUrl?: string | n
   // ✅ send an explicit integer for overall_score
   const overall = toScore(analysis?.overall);
 
-  const { error: insertErr } = await supabase
+  const { data: insertedRows, error: insertErr } = await supabase
     .from(TABLE)
-    .insert([{ user_id: userId, image_url: imageUrl, analysis, overall_score: overall }]);
+    .insert([{ user_id: userId, image_url: imageUrl, analysis, overall_score: overall }])
+    .select("id");
 
   if (insertErr) {
     console.error("Failed to save analysis to history:", insertErr);
     return { ok: false, error: insertErr.message };
   }
+
+  const analysisId: string | undefined = insertedRows?.[0]?.id;
 
   // Keep only the newest 10 rows for this user
   const { data: rows } = await supabase
@@ -46,7 +49,7 @@ export async function saveAnalysis(opts: { userId: string; imageUrl?: string | n
     if (delErr) console.error("history cleanup error:", delErr);
   }
 
-  return { ok: true };
+  return { ok: true, analysisId };
 }
 
 export async function getHistory(opts: { userId: string; limit?: number }) {
