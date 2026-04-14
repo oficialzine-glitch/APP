@@ -64,6 +64,16 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
           const row = payload.new as ChatMessage;
           setMessages(prev => {
             if (prev.some(m => m.id === row.id)) return prev;
+            if (row.role === 'user') {
+              const tempIndex = prev.findIndex(
+                m => m.id.startsWith('temp-') && m.role === 'user' && m.content === row.content
+              );
+              if (tempIndex !== -1) {
+                const next = [...prev];
+                next[tempIndex] = row;
+                return next;
+              }
+            }
             return [...prev, row];
           });
           if (row.role === 'assistant') {
@@ -97,6 +107,15 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setSending(true);
 
+    const tempId = 'temp-' + Date.now();
+    const tempMessage: ChatMessage = {
+      id: tempId,
+      role: 'user',
+      content,
+      created_at: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, tempMessage]);
+
     const timeout = setTimeout(() => setSending(false), 30000);
 
     const { error: insertError } = await supabase.from('chat_messages').insert({
@@ -108,6 +127,7 @@ export default function ChatPage({ onBack, analysisId, analysisScore }: ChatPage
 
     if (insertError) {
       console.error('Failed to send message:', insertError);
+      setMessages(prev => prev.filter(m => m.id !== tempId));
       clearTimeout(timeout);
       setSending(false);
       return;
